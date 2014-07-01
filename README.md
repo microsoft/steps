@@ -5,6 +5,10 @@ sample application, history data is used to display a graph of user’s steps du
 current day. The combination of history data and real-time step count is used to 
 calculate the number of total steps, and the number of walking and running steps.
 
+For more information on implementation, visit Nokia Lumia Developer's Library: 
+http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/samples.html
+http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/step-counter-api.html
+
 1. Instructions
 --------------------------------------------------------------------------------
 
