@@ -80,5 +80,5 @@ The projects listed below are exemplifying the usage of the SensorCore APIs
 * Steps -  https://github.com/nokia-developer/steps
 * Places - https://github.com/nokia-developer/places
 * Tracks - https://github.com/nokia-developer/tracks
-* Recorder - https://github.com/nokia-developer/recorder
 * Activities - https://github.com/nokia-developer/activities
+* Recorder - https://github.com/nokia-developer/recorder
