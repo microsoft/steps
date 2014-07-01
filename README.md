@@ -75,8 +75,9 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 5. See also
 --------------------------------------------------------------------------------
 
-The projects listed below are exemplifying the usage of the other SensorCore APIs
+The projects listed below are exemplifying the usage of the SensorCore APIs
 
-* Activities -  https://github.com/nokia-developer/activities
+* Steps -  https://github.com/nokia-developer/steps
 * Places - https://github.com/nokia-developer/places
-* Tracks - https://github.com/nokia-developer/tracks
+* Recorder - https://github.com/nokia-developer/recorder
+* Activities - https://github.com/nokia-developer/activities
