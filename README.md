@@ -71,8 +71,14 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 
 * Version 1.0: The first release.
 
+5. Downloads
+---------
 
-5. See also
+| Project | Release | Download |
+| ------- | --------| -------- |
+| Steps | v1.0 | [steps-1.0.zip](https://github.com/nokia-developer/steps/archive/v1.0.zip) |
+
+6. See also
 --------------------------------------------------------------------------------
 
 The projects listed below are exemplifying the usage of the SensorCore APIs
