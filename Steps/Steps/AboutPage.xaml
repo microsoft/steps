@@ -26,12 +26,18 @@
         <Image Grid.RowSpan="2" Source="/Assets/steps_background_02.png" Opacity="0.25"/>
 
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="{Binding Path=LocalizedResources.AppName, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}"/>
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="30,17,0,28">
+            <TextBlock Text="{Binding Path=LocalizedResources.AppName, Source={StaticResource LocalizedStrings}}"  Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0"/>
+            <TextBlock Text="about" Margin="0,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <RichTextBox FontSize="16">
+                <Paragraph>
+                    <Run x:Uid="VersionText" Text="{Binding Path=LocalizedResources.VersionText, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
+                    <Run x:Name="VersionNumber" Text="" Foreground="White"/>
+                </Paragraph>
+                <Paragraph/>
                 <Paragraph>
                     <Run x:Uid="AboutDescription" Text="{Binding Path=LocalizedResources.AboutDescription, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
                 </Paragraph>
@@ -41,13 +47,13 @@
                 </Paragraph>
                 <Paragraph/>
                 <Paragraph>
-                    <Run x:Uid="AboutHyperlinkProject" Text="{Binding Path=LocalizedResources.AboutHyperlinkProject, Source={StaticResource LocalizedStrings}}" Foreground="Black"/>
+                    <Run x:Uid="AboutHyperlinkProject" Text="{Binding Path=LocalizedResources.AboutHyperlinkProject, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
                 </Paragraph>
                 <Paragraph/>
-                <Paragraph>
-                    <Run Text="http://developer.nokia.com" Foreground="Black"/>
-                </Paragraph>
+
             </RichTextBox>
+            <HyperlinkButton Name="link" TargetName="anything" NavigateUri="http://developer.nokia.com"
+                Content="Nokia Developer website" FontSize="24" HorizontalAlignment="Left"/>
         </StackPanel>
         
 

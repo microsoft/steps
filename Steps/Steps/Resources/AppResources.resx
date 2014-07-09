@@ -135,18 +135,21 @@
     <value>Menu Item</value>
   </data>
   <data name="AboutDescription" xml:space="preserve">
-    <value>This developer sample demonstrates Nokia SensorCore SDK Steps API functionality.</value>
+    <value>This developer sample demonstrates Lumia SensorCore SDK Steps API functionality.</value>
   </data>
   <data name="AboutDisclaimer" xml:space="preserve">
     <value>This Nokia developer example application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular Nokia phone users. The source code and documentation of this example can be downloaded from Nokia Developer website.</value>
   </data>
   <data name="AboutHyperlinkProject" xml:space="preserve">
-    <value>Nokia Developer website</value>
+    <value>Learn more and get the latest version of this software from:</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>SENSORCORE SAMPLE</value>
+    <value>LUMIA SENSORCORE SAMPLE</value>
   </data>
   <data name="Sen" xml:space="preserve">
     <value />
+  </data>
+  <data name="VersionText" xml:space="preserve">
+    <value>Version:</value>
   </data>
 </root>

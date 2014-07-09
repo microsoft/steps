@@ -61,7 +61,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This developer sample demonstrates Nokia SensorCore SDK Steps API functionality..
+        ///   Looks up a localized string similar to This developer sample demonstrates Lumia SensorCore SDK Steps API functionality..
         /// </summary>
         public static string AboutDescription {
             get {
@@ -79,7 +79,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nokia Developer website.
+        ///   Looks up a localized string similar to Learn more and get the latest version of this software from:.
         /// </summary>
         public static string AboutHyperlinkProject {
             get {
@@ -115,7 +115,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SENSORCORE SAMPLE.
+        ///   Looks up a localized string similar to LUMIA SENSORCORE SAMPLE.
         /// </summary>
         public static string AppName {
             get {
@@ -147,6 +147,15 @@ namespace Steps.Resources {
         public static string Sen {
             get {
                 return ResourceManager.GetString("Sen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version:.
+        /// </summary>
+        public static string VersionText {
+            get {
+                return ResourceManager.GetString("VersionText", resourceCulture);
             }
         }
     }
