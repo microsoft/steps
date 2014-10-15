@@ -68,7 +68,10 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 
 4. Version history
 --------------------------------------------------------------------------------
-* Version 1.1: Step counter on live tile gets updated using triggers for background tasks. Besides today upto 7 days of step history made available. 
+* Version 1.1: 
+ * Step counter on live tile gets updated using triggers for background tasks. 
+ * Besides today upto 7 days of step history made available. 
+ * Update to use Lumia SensorCore SDK 1.0
 * Version 1.0: The first release.
 
 
