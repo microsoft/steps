@@ -1,9 +1,8 @@
 Steps
 =====
-Steps is a sample application demonstrating the usage of Step Counter API. In this 
+Steps is a Lumia SensorCore SDK sample application demonstrating the usage of Step Counter API. In this 
 sample application, history data is used to display a graph of user’s steps during 
-current day. The combination of history data and real-time step count is used to 
-calculate the number of total steps, and the number of walking and running steps.
+current day, and up to 7 days in the past.
 
 For more information on implementation, visit Nokia Lumia Developer's Library: 
 http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/samples.html
@@ -70,7 +69,7 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 --------------------------------------------------------------------------------
 * Version 1.1: 
  * Step counter on live tile gets updated using triggers for background tasks. 
- * Besides today upto 7 days of step history made available. 
+ * Besides today up to 7 days of step history made available. 
  * Update to use Lumia SensorCore SDK 1.0
 * Version 1.0: The first release.
 
