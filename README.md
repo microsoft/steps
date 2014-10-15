@@ -68,17 +68,18 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 
 4. Version history
 --------------------------------------------------------------------------------
-
+* Version 1.1: Step counter on live tile gets updated using triggers for background tasks. Besides today upto 7 days of step history made available. 
 * Version 1.0: The first release.
-* Version 1.1: Secondary live tile and history support added
+
 
 5. Downloads
 ---------
 
 | Project | Release | Download |
 | ------- | --------| -------- |
-| Steps | v1.0 | [steps-1.0.zip](https://github.com/nokia-developer/steps/archive/v1.0.zip) |
 | Steps | v1.1 | [steps-1.1.zip](https://github.com/nokia-developer/steps/archive/v1.1.zip) |
+| Steps | v1.0 | [steps-1.0.zip](https://github.com/nokia-developer/steps/archive/v1.0.zip) |
+
 
 6. See also
 --------------------------------------------------------------------------------
