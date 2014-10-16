@@ -48,11 +48,8 @@ namespace Steps
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-
-            if (e.NavigationMode != NavigationMode.Reset)
-            {
-                await App.Engine.ActivateAsync();
-            }
+            await App.Engine.ActivateAsync();
+            
             UpdateMenuAndAppBarIcons();
         }
 

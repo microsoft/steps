@@ -20,10 +20,11 @@ namespace Steps
         /// <returns>The MainModel of the app</returns>
         public MainModel MainModel { get; private set; }
 
-        
         private IStepCounter _stepCounter;
 
         private DispatcherTimer _pollTimer;
+
+        private bool _active = false; 
 
         /// <summary>
         /// constructor  
@@ -38,6 +39,7 @@ namespace Steps
         /// </summary>
         public async Task DeactivateAsync()
         {
+            _active = false;
             if (_pollTimer != null)
             {
                 _pollTimer.Stop();
@@ -54,6 +56,9 @@ namespace Steps
         /// </summary>
         public async Task ActivateAsync()
         {
+            if (_active)
+                return;
+
             if (_stepCounter != null)
             {
                 await _stepCounter.ActivateAsync();
@@ -62,10 +67,15 @@ namespace Steps
             {
                 await InitializeAsync();
             }
-            _pollTimer = new DispatcherTimer();
-            _pollTimer.Interval = TimeSpan.FromSeconds(5);
-            _pollTimer.Tick += PollTimerTick;
-            _pollTimer.Start();
+            if (_pollTimer == null)
+            {
+                _pollTimer = new DispatcherTimer();
+                _pollTimer.Interval = TimeSpan.FromSeconds(5);
+                _pollTimer.Tick += PollTimerTick;
+                _pollTimer.Start();
+            }
+            _active = true;
+
         }
 
         /// <summary>
@@ -159,7 +169,8 @@ namespace Steps
         /// </summary>
         public async Task UpdateStepCountersAsync()
         {
-            if (_stepCounter != null)
+            
+            if (_stepCounter != null && _active)
             {
                 if (MainModel.day == 0) //today's step
                 {
@@ -256,7 +267,9 @@ namespace Steps
             else
             {
                 await _stepCounter.ActivateAsync();
+                
             }
+            _active = true;
         }
 
         /// <summary>
@@ -270,6 +283,8 @@ namespace Steps
 
             if (!res)
                 Application.Current.Terminate();
+
+            _active = true;
         }
 
         /// <summary>
