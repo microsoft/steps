@@ -22,8 +22,7 @@ namespace BackgroundTasks
     {
         public static uint GetMeter(uint steps)
         {
-            if (steps < 600) { return 0; }
-            else if (steps < 1400) { return 1; }
+            if (steps < 1400) { return 1; }
             else if (steps < 2600) { return  2; }
             else if (steps < 3800) { return  3; }
             else if (steps < 5000) { return  4; }

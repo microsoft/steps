@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2014/deployment" AppPlatformVersion="8.1">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{c80afab2-39d5-406a-abbe-3777e3f0b625}" Title="Steps" RuntimeType="Silverlight" Version="1.1.0.0" Genre="apps.normal" Author="Steps author" Description="Sample description" SDOptOut="false" BackUpOptOut="false" Publisher="Steps" PublisherID="{5bda2eda-1ca9-45c9-9a87-77701f1fd0ca}" NotificationService="WNS">
+  <App xmlns="" ProductID="{c80afab2-39d5-406a-abbe-3777e3f0b625}" Title="Steps – Lumia SensorCore SDK sample" RuntimeType="Silverlight" Version="1.1.0.1" Genre="apps.normal" Author="Steps author" Description="Sample description" SDOptOut="false" BackUpOptOut="false" Publisher="Steps" PublisherID="{5bda2eda-1ca9-45c9-9a87-77701f1fd0ca}" NotificationService="WNS">
     <IconPath IsRelative="true" IsResource="false">Assets\steps_launcher.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -16,26 +16,11 @@
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="Step_Counter_DemoToken" TaskName="_default">
-        <TemplateIconic>
-          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\IconicTileSmall.png</SmallImageURI>
+        <TemplateType5>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\steps_launcher.png</BackgroundImageURI>
           <Count>0</Count>
-          <IconImageURI IsRelative="true" IsResource="false">Assets\Tiles\IconicTileMediumLarge.png</IconImageURI>
-          <Title>
-          </Title>
-          <Message>
-          </Message>
-          <BackgroundColor>
-          </BackgroundColor>
-          <HasLarge>True</HasLarge>
-          <LargeContent1>
-          </LargeContent1>
-          <LargeContent2>
-          </LargeContent2>
-          <LargeContent3>
-          </LargeContent3>
-          <DeviceLockImageURI IsRelative="true" IsResource="false">
-          </DeviceLockImageURI>
-        </TemplateIconic>
+          <Title>Steps</Title>
+        </TemplateType5>
       </PrimaryToken>
     </Tokens>
     <ScreenResolutions>

@@ -61,7 +61,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This developer sample demonstrates Nokia SensorCore SDK Steps API functionality..
+        ///   Looks up a localized string similar to The steps developer sample application demonstrates Lumia SensorCore SDK&apos;s Step Counter API functionality..
         /// </summary>
         public static string AboutDescription {
             get {
@@ -70,7 +70,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This Nokia developer example application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular Nokia phone users. The source code and documentation of this example can be downloaded from Nokia Developer website..
+        ///   Looks up a localized string similar to This developer example application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular phone users. The source code and more information of this sample can be found in GitHub:.
         /// </summary>
         public static string AboutDisclaimer {
             get {
@@ -79,7 +79,7 @@ namespace Steps.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nokia Developer website.
+        ///   Looks up a localized string similar to Steps project in GitHub.
         /// </summary>
         public static string AboutHyperlinkProject {
             get {
@@ -147,6 +147,15 @@ namespace Steps.Resources {
         public static string Sen {
             get {
                 return ResourceManager.GetString("Sen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version:.
+        /// </summary>
+        public static string VersionText {
+            get {
+                return ResourceManager.GetString("VersionText", resourceCulture);
             }
         }
     }

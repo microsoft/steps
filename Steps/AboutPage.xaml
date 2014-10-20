@@ -33,6 +33,11 @@
         <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <RichTextBox FontSize="16">
                 <Paragraph>
+                    <Run x:Uid="VersionText" Text="{Binding Path=LocalizedResources.VersionText, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
+                    <Run x:Name="VersionNumber" Text="" Foreground="White"/>
+                </Paragraph>
+                <Paragraph/>
+                <Paragraph>
                     <Run x:Uid="AboutDescription" Text="{Binding Path=LocalizedResources.AboutDescription, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
                 </Paragraph>
                 <Paragraph/>
@@ -40,14 +45,10 @@
                     <Run x:Uid="AboutDisclaimer" Text="{Binding Path=LocalizedResources.AboutDisclaimer, Source={StaticResource LocalizedStrings}}" Foreground="White"/> 
                 </Paragraph>
                 <Paragraph/>
-                <Paragraph>
-                    <Run x:Uid="AboutHyperlinkProject" Text="{Binding Path=LocalizedResources.AboutHyperlinkProject, Source={StaticResource LocalizedStrings}}" Foreground="White"/>
-                </Paragraph>
-                <Paragraph/>
-                <Paragraph>
-                    <Run Text="http://developer.nokia.com" Foreground="White"/>
-                </Paragraph>
+
             </RichTextBox>
+            <HyperlinkButton Name="link" TargetName="anything" NavigateUri="https://github.com/nokia-developer/steps"
+                Content="Steps project in GitHub" FontSize="24" HorizontalAlignment="Left"/>
         </StackPanel>
         
 

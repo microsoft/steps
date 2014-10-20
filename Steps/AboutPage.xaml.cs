@@ -19,6 +19,11 @@ namespace Steps
         public AboutPage()
         {
             InitializeComponent();
+
+            this.Loaded += (sender, args) =>
+          {               var ver = Windows.ApplicationModel.Package.Current.Id.Version;
+              VersionNumber.Text = string.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
+          };
         }
     }
 }
