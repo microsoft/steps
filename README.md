@@ -4,7 +4,7 @@ Steps is a Lumia SensorCore SDK sample application demonstrating the usage of St
 sample application, history data is used to display a graph of user’s steps during 
 current day, and up to 7 days in the past.
 
-For more information on implementation, visit Nokia Lumia Developer's Library: 
+For more information on implementation, visit Lumia Developer's Library: 
 http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/samples.html
 http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/step-counter-api.html
 
@@ -62,7 +62,7 @@ returns.
 --------------------------------------------------------------------------------
 
 See the licence text file delivered with this project. The licence file is also
-available online at https://github.com/nokia-developer/steps/blob/master/Licence.txt
+available online at https://github.com/Microsoft/steps/blob/master/Licence.txt
 
 
 4. Version history
@@ -79,8 +79,8 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 
 | Project | Release | Download |
 | ------- | --------| -------- |
-| Steps | v1.1 | [steps-1.1.zip](https://github.com/nokia-developer/steps/archive/v1.1.zip) |
-| Steps | v1.0 | [steps-1.0.zip](https://github.com/nokia-developer/steps/archive/v1.0.zip) |
+| Steps | v1.1 | [steps-1.1.zip](https://github.com/Microsoft/steps/archive/v1.1.zip) |
+| Steps | v1.0 | [steps-1.0.zip](https://github.com/Microsoft/steps/archive/v1.0.zip) |
 
 
 6. See also
@@ -88,8 +88,8 @@ available online at https://github.com/nokia-developer/steps/blob/master/Licence
 
 The projects listed below are exemplifying the usage of the SensorCore APIs
 
-* Steps -  https://github.com/nokia-developer/steps
-* Places - https://github.com/nokia-developer/places
-* Tracks - https://github.com/nokia-developer/tracks
-* Activities - https://github.com/nokia-developer/activities
-* Recorder - https://github.com/nokia-developer/recorder
+* Steps -  https://github.com/Microsoft/steps
+* Places - https://github.com/Microsoft/places
+* Tracks - https://github.com/Microsoft/tracks
+* Activities - https://github.com/Microsoft/activities
+* Recorder - https://github.com/Microsoft/recorder
