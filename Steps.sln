@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steps", "Steps\Steps.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{483F2517-011A-4381-8379-3041287C4CAD}"
 	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
@@ -27,9 +29,7 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|Any CPU.ActiveCfg = Debug|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|ARM.ActiveCfg = Debug|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|ARM.Build.0 = Debug|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -39,34 +39,30 @@ Global
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|x86.ActiveCfg = Debug|x86
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|x86.Build.0 = Debug|x86
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Debug|x86.Deploy.0 = Debug|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Any CPU.ActiveCfg = Release|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|ARM.ActiveCfg = Release|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|ARM.Build.0 = Release|ARM
 		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|ARM.Deploy.0 = Release|ARM
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.Build.0 = Release|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.Deploy.0 = Release|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.ActiveCfg = Release|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.Build.0 = Release|x86
-		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.Deploy.0 = Release|x86
-		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.ActiveCfg = Release|ARM
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.Build.0 = Release|ARM
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|Mixed Platforms.Deploy.0 = Release|ARM
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.ActiveCfg = Release|ARM
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.Build.0 = Release|ARM
+		{C80AFAB2-39D5-406A-ABBE-3777E3F0B625}.Release|x86.Deploy.0 = Release|ARM
+		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|Any CPU.ActiveCfg = Debug|ARM
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|ARM.ActiveCfg = Debug|ARM
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|ARM.Build.0 = Debug|ARM
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|x86.ActiveCfg = Debug|x86
 		{139193F3-9FEF-4C44-9655-213648597A09}.Debug|x86.Build.0 = Debug|x86
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Any CPU.ActiveCfg = Release|ARM
 		{139193F3-9FEF-4C44-9655-213648597A09}.Release|ARM.ActiveCfg = Release|ARM
 		{139193F3-9FEF-4C44-9655-213648597A09}.Release|ARM.Build.0 = Release|ARM
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Mixed Platforms.Build.0 = Release|x86
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|x86.ActiveCfg = Release|x86
-		{139193F3-9FEF-4C44-9655-213648597A09}.Release|x86.Build.0 = Release|x86
+		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Mixed Platforms.ActiveCfg = Release|ARM
+		{139193F3-9FEF-4C44-9655-213648597A09}.Release|Mixed Platforms.Build.0 = Release|ARM
+		{139193F3-9FEF-4C44-9655-213648597A09}.Release|x86.ActiveCfg = Release|ARM
+		{139193F3-9FEF-4C44-9655-213648597A09}.Release|x86.Build.0 = Release|ARM
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -148,10 +148,10 @@
   <ItemGroup>
     <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\BadgeLogo.scale-240.png" />
-    <Content Include="Assets\Images\appbar.pin.png" />
-    <Content Include="Assets\Images\appbar.pin.remove.png" />
     <Content Include="Assets\Images\back.png" />
     <Content Include="Assets\Images\next.png" />
+    <Content Include="Assets\Images\pin-48px.png" />
+    <Content Include="Assets\Images\unpin-48px.png" />
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
@@ -229,12 +229,6 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BackgroundTasks\BackgroundTasks.csproj">
-      <Project>{139193f3-9fef-4c44-9655-213648597a09}</Project>
-      <Name>BackgroundTasks</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Lumia.Sense, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\LumiaSensorCoreSDK.1.0.3.263\lib\portable-wpa81+wp81\x86\Lumia.Sense.winmd</HintPath>
@@ -254,14 +248,6 @@
   </Target>
   -->
   <ProjectExtensions />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets'))" />
-    <Error Condition="!Exists('..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets'))" />
-  </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets" Condition="Exists('..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets')" />
   <Import Project="..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets" Condition="Exists('..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets')" />

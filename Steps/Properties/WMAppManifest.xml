@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2014/deployment" AppPlatformVersion="8.1">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{c80afab2-39d5-406a-abbe-3777e3f0b625}" Title="Steps – Lumia SensorCore SDK sample" RuntimeType="Silverlight" Version="1.1.0.1" Genre="apps.normal" Author="Steps author" Description="Sample description" SDOptOut="false" BackUpOptOut="false" Publisher="Steps" PublisherID="{5bda2eda-1ca9-45c9-9a87-77701f1fd0ca}" NotificationService="WNS">
+  <App xmlns="" ProductID="{c80afab2-39d5-406a-abbe-3777e3f0b625}" Title="Steps – Lumia SensorCore SDK sample" RuntimeType="Silverlight" Version="1.1.0.2" Genre="apps.normal" Author="Steps author" Description="Sample description" SDOptOut="false" BackUpOptOut="false" Publisher="Steps" PublisherID="{5bda2eda-1ca9-45c9-9a87-77701f1fd0ca}" NotificationService="WNS">
     <IconPath IsRelative="true" IsResource="false">Assets\steps_launcher.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />

@@ -4,10 +4,6 @@ Steps is a Lumia SensorCore SDK sample application demonstrating the usage of St
 sample application, history data is used to display a graph of user’s steps during 
 current day, and up to 7 days in the past.
 
-For more information on implementation, visit Lumia Developer's Library: 
-http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/samples.html
-http://developer.nokia.com/resources/library/Lumia/sensorcore-sdk/step-counter-api.html
-
 1. Instructions
 --------------------------------------------------------------------------------
 
@@ -58,15 +54,10 @@ from the value of GetCurrentReadingAsync.
 To draw the graph we use the same array that the above call to GetStepCountHistoryAsync
 returns.
  
-3. Licence
+3. Version history
 --------------------------------------------------------------------------------
-
-See the licence text file delivered with this project. The licence file is also
-available online at https://github.com/Microsoft/steps/blob/master/Licence.txt
-
-
-4. Version history
---------------------------------------------------------------------------------
+* Version 1.1.0.2:
+ * Some bug fixes made in this release.  
 * Version 1.1: 
  * Step counter on live tile gets updated using triggers for background tasks. 
  * Besides today up to 7 days of step history made available. 
@@ -74,16 +65,17 @@ available online at https://github.com/Microsoft/steps/blob/master/Licence.txt
 * Version 1.0: The first release.
 
 
-5. Downloads
+4. Downloads
 ---------
 
 | Project | Release | Download |
 | ------- | --------| -------- |
+| Steps | v1.1.0.2 | [steps-1.1.0.2.zip](https://github.com/Microsoft/steps/archive/v1.1.0.2.zip) |
 | Steps | v1.1 | [steps-1.1.zip](https://github.com/Microsoft/steps/archive/v1.1.zip) |
 | Steps | v1.0 | [steps-1.0.zip](https://github.com/Microsoft/steps/archive/v1.0.zip) |
 
 
-6. See also
+5. See also
 --------------------------------------------------------------------------------
 
 The projects listed below are exemplifying the usage of the SensorCore APIs

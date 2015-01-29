@@ -17,24 +17,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <NuGetPackageImportStamp>5ff7fa89</NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>3ddbf11a</NuGetPackageImportStamp>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,28 +42,6 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_PHONE_APP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="OEMTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,6 +50,12 @@
     <None Include="Help\LumiaSensorCoreSDK.chm" />
     <None Include="packages.config" />
   </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetPlatformIdentifier)' == '' ">
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lumia.Sense, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,22 +66,8 @@
       <HintPath>..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\lib\portable-wpa81+wp81\x86\Lumia.Sense.Testing.winmd</HintPath>
     </Reference>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
-    <VisualStudioVersion>12.0</VisualStudioVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetPlatformIdentifier)' == '' ">
-    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
-  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\$(TargetPlatformVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wpa81\LumiaSensorCoreSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wpa81\LumiaSensorCoreSDK.targets'))" />
-    <Error Condition="!Exists('..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wpa81\LumiaSensorCoreSDKTesting.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wpa81\LumiaSensorCoreSDKTesting.targets'))" />
-  </Target>
   <Import Project="..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wpa81\LumiaSensorCoreSDK.targets" Condition="Exists('..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wpa81\LumiaSensorCoreSDK.targets')" />
   <Import Project="..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wpa81\LumiaSensorCoreSDKTesting.targets" Condition="Exists('..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wpa81\LumiaSensorCoreSDKTesting.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

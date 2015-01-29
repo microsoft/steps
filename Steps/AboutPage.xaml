@@ -12,24 +12,20 @@
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d"
     shell:SystemTray.IsVisible="True">
-
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot">
         <Grid.Background>
             <SolidColorBrush Color="#008A00"></SolidColorBrush>
         </Grid.Background>
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Image Grid.RowSpan="2" Source="/Assets/steps_background_02.png" Opacity="0.25"/>
-
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="{Binding Path=LocalizedResources.AppName, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}"/>
         </StackPanel>
-
         <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <RichTextBox FontSize="16">
                 <Paragraph>
@@ -45,13 +41,9 @@
                     <Run x:Uid="AboutDisclaimer" Text="{Binding Path=LocalizedResources.AboutDisclaimer, Source={StaticResource LocalizedStrings}}" Foreground="White"/> 
                 </Paragraph>
                 <Paragraph/>
-
             </RichTextBox>
-            <HyperlinkButton Name="link" TargetName="anything" NavigateUri="https://github.com/nokia-developer/steps"
+            <HyperlinkButton Name="link" TargetName="anything" NavigateUri="https://github.com/Microsoft/steps"
                 Content="Steps project in GitHub" FontSize="24" HorizontalAlignment="Left"/>
         </StackPanel>
-        
-
     </Grid>
-
 </phone:PhoneApplicationPage>

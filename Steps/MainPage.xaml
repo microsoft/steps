@@ -15,50 +15,25 @@
     SupportedOrientations="Portrait" Orientation="Portrait"
     shell:SystemTray.IsVisible="True"
     shell:SystemTray.BackgroundColor="#008A00">
-
     <phone:PhoneApplicationPage.Resources>
         <src:Half x:Key="Half"/>
         <src:Margin x:Key="Margin"/>
-        
     </phone:PhoneApplicationPage.Resources>
-    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" d:DataContext="{d:DesignInstance Type=local:MainModel, IsDesignTimeCreatable=True}">
         <Grid.Background>
             <SolidColorBrush Color="#008A00"></SolidColorBrush>
         </Grid.Background>
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Image Grid.RowSpan="2" Source="/Assets/steps_background_02.png" Opacity="0.25"/>
-        <!-- LOCALIZATION NOTE:
-            To localize the displayed strings copy their values to appropriately named
-            keys in the app's neutral language resource file (AppResources.resx) then
-            replace the hard-coded text value between the attributes' quotation marks
-            with the binding clause whose path points to that string name.
-
-            For example:
-
-                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
-
-            This binding points to the template's string resource named "ApplicationTitle".
-
-            Adding supported languages in the Project Properties tab will create a
-            new resx file per language that can carry the translated values of your
-            UI strings. The binding in these examples will cause the value of the
-            attributes to be drawn from the .resx file that matches the
-            CurrentUICulture of the app at run time.
-         -->
-
         <!--TitlePanel contains the name of the application and page title-->
-
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="30,17,0,28">
             <TextBlock Text="{Binding Path=LocalizedResources.AppName, Source={StaticResource LocalizedStrings}}"  Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0"/>
             <TextBlock Text="steps" Margin="0,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
-        
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="30,0,30,0">
             <Grid.RowDefinitions>
@@ -70,7 +45,6 @@
                 <RowDefinition Height="35*"/>
                 <RowDefinition Height="15*"/>
             </Grid.RowDefinitions>
-
             <Grid Grid.Row="0" Margin="0,0,0,-20">
                 <TextBlock Text="{Binding Date}" FontSize="25" TextAlignment="left"/>
             </Grid>
@@ -79,8 +53,6 @@
                     <TextBlock  Name="StepsToday" Text="{Binding StepsToday}" TextAlignment="left"/>
                 </Viewbox>
             </Grid>
-
-            
             <Grid x:Name="StepCounters" Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -90,7 +62,6 @@
                     <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-
                 <Grid Grid.Row="0" Grid.Column="0">
                     <TextBlock Text="walking steps" FontSize="{StaticResource PhoneFontSizeMediumLarge}" />
                 </Grid>
@@ -115,13 +86,11 @@
                             <SolidColorBrush Color="White" Opacity="0.25"/>
                         </Rectangle.Fill>
                     </Rectangle>
-
                     <Line x:Name="Line"  X1="{Binding Margin}" Y1="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" X2="{Binding ElementName=StepGraph, Path=ActualWidth, Converter={StaticResource Margin}}" Y2="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Stroke="White" StrokeThickness="2" />
                     <Path Stroke="Beige" StrokeThickness="4" Data="{Binding PathString}" />
-
                     <TextBlock Text="{Binding Max}" Canvas.Top="0" Canvas.Left="{Binding Margin}"/>
                     <TextBlock Text="{Binding Half}" Canvas.Top="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Canvas.Left="{Binding Margin}"/>
-                </Canvas> 
+                </Canvas>
             </Grid>
             <Grid Grid.Row="6" >
                 <Grid.ColumnDefinitions>
@@ -148,23 +117,15 @@
                 </Grid>
             </Grid>
         </Grid>
-        <!--Uncomment to see an alignment grid to help ensure your controls are
-            aligned on common boundaries.  The image has a top margin of -32px to
-            account for the System Tray. Set this to 0 (or remove the margin altogether)
-            if the System Tray is hidden.
-
-            Before shipping remove this XAML and the image itself.-->
-        <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar Mode="Default" Opacity="0.5" IsMenuEnabled="True" IsVisible="True">
             <shell:ApplicationBarIconButton IconUri="Assets/Images/back.png" Text="back" Click="ApplicationBarIconButton_Click_Back" />
             <shell:ApplicationBarIconButton IconUri="Assets/Images/next.png" Text="next" Click="ApplicationBarIconButton_Click_Next" />
-            <shell:ApplicationBarIconButton IconUri="Assets/Images/appbar.pin.png" Text="pin" Click="ApplicationBarRegisterUnRegisterTile"/>
+            <shell:ApplicationBarIconButton IconUri="Assets/Images/pin-48px.png" Text="pin" Click="ApplicationBarRegisterUnRegisterTile"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="about" Click="Click_NavigateToAbout"  />
             </shell:ApplicationBar.MenuItems>
-
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>
