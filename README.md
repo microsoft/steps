@@ -56,6 +56,7 @@ returns.
  
 3. Version history
 --------------------------------------------------------------------------------
+* Version 1.1.0.3: Updated to use latest Lumia SensorCore SDK 1.1 Preview
 * Version 1.1.0.2:
  * Some bug fixes made in this release.  
 * Version 1.1: 
@@ -70,6 +71,7 @@ returns.
 
 | Project | Release | Download |
 | ------- | --------| -------- |
+| Steps | v1.1.0.3 | [steps-1.1.0.3.zip](https://github.com/Microsoft/steps/archive/v1.1.0.3.zip) |
 | Steps | v1.1.0.2 | [steps-1.1.0.2.zip](https://github.com/Microsoft/steps/archive/v1.1.0.2.zip) |
 | Steps | v1.1 | [steps-1.1.zip](https://github.com/Microsoft/steps/archive/v1.1.zip) |
 | Steps | v1.0 | [steps-1.0.zip](https://github.com/Microsoft/steps/archive/v1.0.zip) |

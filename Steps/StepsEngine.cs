@@ -1,4 +1,5 @@
 ﻿/*
+ * The MIT License (MIT)
  * Copyright (c) 2015 Microsoft
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +22,7 @@ using Lumia.Sense;
 using Lumia.Sense.Testing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -32,7 +34,7 @@ namespace Steps
     /// </summary>
     public class StepsEngine
     {
-        #region Variable declarations
+        #region Private members
         /// <summary>
         /// Access to the main model of the app
         /// </summary>
@@ -133,7 +135,7 @@ namespace Steps
             uint firstWalkingSteps = 0;
             uint firstRunningSteps = 0;
             List<uint> steps = new List<uint>();
-            for (int i = 0; i < MainModel._ArrayMaxSize; i++)
+            for (int i = 0; i < 200; i++)
                 steps.Add(0);
             IList<StepCounterReading> results = null;
             if (MainModel._day == 0)
@@ -297,7 +299,7 @@ namespace Steps
         {
             // We look at the first value for today.
             var results = await _stepCounter.GetStepCountHistoryAsync(DateTime.Now.Date - TimeSpan.FromDays(MainModel._day), TimeSpan.FromDays(1));
-            if (results != null)
+            if (results.Count > 0)
                 return results[0];
             else
                 return null;

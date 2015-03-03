@@ -135,8 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Help\LumiaSensorCoreSDK.chm" />
-    <None Include="Help\SensorCoreSDK.chm" />
     <None Include="packages.config" />
     <None Include="Properties\AppManifest.xml">
       <SubType>Designer</SubType>
@@ -228,16 +226,6 @@
       <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Lumia.Sense, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\LumiaSensorCoreSDK.1.0.3.263\lib\portable-wpa81+wp81\x86\Lumia.Sense.winmd</HintPath>
-    </Reference>
-    <Reference Include="Lumia.Sense.Testing, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\lib\portable-wpa81+wp81\x86\Lumia.Sense.Testing.winmd</HintPath>
-    </Reference>
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -247,8 +235,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ProjectExtensions />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets" Condition="Exists('..\packages\LumiaSensorCoreSDK.1.0.3.263\build\wp81\LumiaSensorCoreSDK.targets')" />
-  <Import Project="..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets" Condition="Exists('..\packages\LumiaSensorCoreSDKTesting.1.0.3.263\build\wp81\LumiaSensorCoreSDKTesting.targets')" />
 </Project>

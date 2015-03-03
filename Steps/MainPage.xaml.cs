@@ -1,4 +1,5 @@
 ﻿/*
+ * The MIT License (MIT)
  * Copyright (c) 2015 Microsoft
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,10 +70,52 @@ namespace Steps
         /// <param name="e">Provides data for non-cancelable navigation events</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            await InitCore();
             await App.Engine.ActivateAsync();
             UpdateMenuAndAppBarIcons();
         }
         #endregion
+
+        private async Task InitCore()
+        {
+            if (!await StepCounter.IsSupportedAsync())
+            {
+                MessageBoxResult dlg = MessageBox.Show("Unfortunately this device does not support step counting");
+            }
+            else
+            {
+                // MotionDataSettings settings = await SenseHelper.GetSettingsAsync();
+                // Starting from version 2 of Motion data settings Step counter and Acitivity monitor are always available. In earlier versions system
+                // location setting and Motion data had to be enabled.
+                uint apiSet = await SenseHelper.GetSupportedApiSetAsync();
+                MotionDataSettings settings = await SenseHelper.GetSettingsAsync();
+                if (apiSet > 2)
+                {
+                    if (!settings.LocationEnabled)
+                    {
+                        MessageBoxResult dlg = MessageBox.Show("In order to count steps you need to enable location in system settings. Do you want to open settings now?", "Information", MessageBoxButton.OKCancel);
+                        if (dlg == MessageBoxResult.OK)
+                            await SenseHelper.LaunchLocationSettingsAsync();
+                    }
+                    if (!settings.PlacesVisited)
+                    {
+                        MessageBoxResult dlg = new MessageBoxResult();
+                        if (settings.Version < 2)
+                        {
+                            dlg = MessageBox.Show("In order to count steps you need to enable Motion data collection in Motion data settings. Do you want to open settings now?", "Information", MessageBoxButton.OKCancel);
+                        }
+                        else
+                        {
+                            dlg = MessageBox.Show("In order to collect and view visited places you need to enable Places visited in Motion data settings. Do you want to open settings now? if no, application will exit", "Information", MessageBoxButton.OKCancel);
+                        }
+                        if (dlg == MessageBoxResult.OK)
+                            await SenseHelper.LaunchSenseSettingsAsync();
+                        else
+                            Application.Current.Terminate();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Executes when the Step graph finished loading.
