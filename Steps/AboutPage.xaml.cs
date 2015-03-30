@@ -19,9 +19,6 @@
  */
 using Microsoft.Phone.Controls;
 
-/// <summary>
-/// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
-/// </summary>
 namespace Steps
 {
     /// <summary>

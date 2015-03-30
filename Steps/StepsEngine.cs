@@ -19,7 +19,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
  */
 using Lumia.Sense;
-using Lumia.Sense.Testing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,25 +35,14 @@ namespace Steps
     {
         #region Private members
         /// <summary>
-        /// Access to the main model of the app
-        /// </summary>
-        /// <returns>The MainModel of the app</returns>
-        public MainModel MainModel { get; private set; }
-
-        /// <summary>
-        /// Stepcounter. This will be shown on the main screen
+        /// Step counter instance
         /// </summary>
         private IStepCounter _stepCounter;
 
         /// <summary>
-        /// Timer which is called at a specified interval
+        /// Is step counter currently active?
         /// </summary>
-        private DispatcherTimer _pollTimer;
-
-        /// <summary>
-        /// Boolean variable
-        /// </summary>
-        private bool _active = false;
+        private bool _sensorActive = false;
         #endregion
 
         /// <summary>
@@ -62,7 +50,52 @@ namespace Steps
         /// </summary>
         public StepsEngine()
         {
-            MainModel = new MainModel();
+        }
+
+        /// <summary>
+        /// Makes sure necessary settings are enabled in order to use SensorCore
+        /// </summary>
+        /// <returns>Asynchronous task</returns>
+        public async Task ValidateSettingsAsync()
+        {
+            if( !await StepCounter.IsSupportedAsync() )
+            {
+                MessageBoxResult dlg = MessageBox.Show( "Unfortunately this device does not support step counting" );
+                Application.Current.Terminate();
+            }
+            else
+            {
+                // Starting from version 2 of Motion data settings Step counter and Acitivity monitor are always available. In earlier versions system
+                // location setting and Motion data had to be enabled.
+                MotionDataSettings settings = await SenseHelper.GetSettingsAsync();
+                if( settings.Version < 2 )
+                {
+                    if( !settings.LocationEnabled )
+                    {
+                        MessageBoxResult dlg = MessageBox.Show( "In order to count steps you need to enable location in system settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
+                        if( dlg == MessageBoxResult.OK )
+                        {
+                            await SenseHelper.LaunchLocationSettingsAsync();
+                        }
+                        else
+                        {
+                            Application.Current.Terminate();
+                        }
+                    }
+                    if( !settings.PlacesVisited )
+                    {
+                        MessageBoxResult rc = MessageBox.Show( "In order to count steps you need to enable Motion data collection in Motion data settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
+                        if( rc == MessageBoxResult.OK )
+                        {
+                            await SenseHelper.LaunchSenseSettingsAsync();
+                        }
+                        else
+                        {
+                            Application.Current.Terminate();
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -70,14 +103,8 @@ namespace Steps
         /// </summary>
         public async Task DeactivateAsync()
         {
-            _active = false;
-            if (_pollTimer != null)
-            {
-                _pollTimer.Stop();
-                _pollTimer = null;
-            }
-            if (_stepCounter != null)
-                await _stepCounter.DeactivateAsync();
+            _sensorActive = false;
+            if( _stepCounter != null ) await _stepCounter.DeactivateAsync();
         }
 
         /// <summary>
@@ -85,9 +112,8 @@ namespace Steps
         /// </summary>
         public async Task ActivateAsync()
         {
-            if (_active)
-                return;
-            if (_stepCounter != null)
+            if( _sensorActive ) return;
+            if( _stepCounter != null )
             {
                 await _stepCounter.ActivateAsync();
             }
@@ -95,152 +121,65 @@ namespace Steps
             {
                 await InitializeAsync();
             }
-            if (_pollTimer == null)
-            {
-                _pollTimer = new DispatcherTimer();
-                _pollTimer.Interval = TimeSpan.FromSeconds(5);
-                _pollTimer.Tick += PollTimerTick;
-                _pollTimer.Start();
-            }
-            _active = true;
+            _sensorActive = true;
         }
 
         /// <summary>
-        /// Updates both step counters and graph  
+        /// Returns steps for given day at given resolution
         /// </summary>
-        public async Task UpdateModelAsync()
+        /// <param name="day">Day to fetch data for</param>
+        /// <param name="resolution">Resolution in minutes. Minimum resolution is five minutes.</param>
+        /// <returns>List of steps counts for the given day at given resolution.</returns>
+        public async Task<List<KeyValuePair<TimeSpan, uint>>> GetStepsCountsForDay( DateTime day, uint resolution )
         {
-            await UpdateGraphAsync();
-            await UpdateStepCountersAsync();
-        }
-
-        /// <summary>
-        /// +1 one day back, -1 one day forward. 
-        /// </summary>
-        /// <param name="day">Day selected.</param>
-        /// <returns>A task.</returns>
-        public async Task ChangeDayAsync(int day)
-        {
-            if (MainModel._day + day > 7 || MainModel._day + day < 0)
-                return;
-            MainModel._day += day;
-            await UpdateModelAsync();
-        }
-
-        /// <summary>
-        /// Creates an array of user's steps for selected day and passes it to the model 
-        /// </summary>
-        public async Task<bool> UpdateGraphAsync()
-        {
-            uint firstWalkingSteps = 0;
-            uint firstRunningSteps = 0;
-            List<uint> steps = new List<uint>();
-            for (int i = 0; i < 200; i++)
-                steps.Add(0);
-            IList<StepCounterReading> results = null;
-            if (MainModel._day == 0)
-                results = await _stepCounter.GetStepCountHistoryAsync(DateTime.Now.Date, DateTime.Now - DateTime.Now.Date);
-            else
-                results = await _stepCounter.GetStepCountHistoryAsync(DateTime.Now.Date - TimeSpan.FromDays(MainModel._day), TimeSpan.FromDays(1));
-            // If there is no items available in the history, we pass array with full of 0 items.
-            // This happens for example when Motion data has been disabled the whole day
-            if (results == null || results.Count == 0)
+            List<KeyValuePair<TimeSpan, uint>> steps = new List<KeyValuePair<TimeSpan, uint>>();
+            uint totalSteps = 0;
+            uint numIntervals = ( ( ( 24 * 60 ) / resolution ) + 1 );
+            if( day.Date.Equals( DateTime.Today ) )
             {
-                MainModel.UpdateGraphSteps(steps);
-                return true;
+                numIntervals = (uint)( ( DateTime.Now - DateTime.Today ).TotalMinutes / resolution ) + 1;
             }
-            bool first = true;
-            int currentStep = (results[0].Timestamp.Minute + results[0].Timestamp.Hour * 60) / MainModel._resolutionInMinutes;
-            foreach (StepCounterReading reading in results)
+            for( int i = 0; i < numIntervals; i++ )
             {
-                if (first)
+                TimeSpan ts = TimeSpan.FromMinutes( i * resolution );
+                DateTime startTime = day.Date + ts;
+                if( startTime < DateTime.Now )
                 {
-                    first = false;
-                    firstWalkingSteps = reading.WalkingStepCount;
-                    firstRunningSteps = reading.RunningStepCount;
-                }
-                if (reading.Timestamp.DateTime.Minute % MainModel._resolutionInMinutes == 0)
-                {
-                    steps[currentStep] = reading.WalkingStepCount + reading.RunningStepCount - firstWalkingSteps - firstRunningSteps;
-                    currentStep++;
-                }
-            }
-            // If there are gaps in the array we fill them e.g. 13,15,0,20 will be 13,15,15,20
-            for (int i = 0; i < currentStep - 1; i++)
-            {
-                if (steps[i] > steps[i + 1])
-                    steps[i + 1] = steps[i];
-            }
-            // Removes empty items from end of the array
-            if (currentStep < MainModel._ArrayMaxSize)
-                steps.RemoveRange(currentStep, steps.Count - currentStep);
-            MainModel.UpdateGraphSteps(steps);
-            return true;
-        }
-
-        /// <summary>
-        /// Updates step counters for selected day.  
-        /// </summary>
-        public async Task UpdateStepCountersAsync()
-        {            
-            if (_stepCounter != null && _active)
-            {
-                // Today's step
-                if (MainModel._day == 0) 
-                {
-                    StepCounterReading current = null;
-                    bool res = await CallSensorCoreApiAsync(async () => { current = await _stepCounter.GetCurrentReadingAsync(); });
-                    StepCounterReading beginOfDay = await FirstReadingForTodayAsync();
-                    if (current != null && beginOfDay != null && res)
+                    try
                     {
-                        MainModel.WalkingSteps = current.WalkingStepCount - beginOfDay.WalkingStepCount;
-                        MainModel.RunningSteps = current.RunningStepCount - beginOfDay.RunningStepCount;
-                        MainModel.StepsToday = MainModel.WalkingSteps + MainModel.RunningSteps;
+                        var stepCount = await _stepCounter.GetStepCountForRangeAsync( startTime, TimeSpan.FromMinutes( resolution ) );
+                        if( stepCount != null )
+                        {
+                            totalSteps += ( stepCount.WalkingStepCount + stepCount.RunningStepCount );
+                            steps.Add( new KeyValuePair<TimeSpan, uint>( ts, totalSteps ) );
+                        }
+                    }
+                    catch( Exception )
+                    {
                     }
                 }
-                // Previous days steps
                 else
                 {
-                    StepCount count = await _stepCounter.GetStepCountForRangeAsync(DateTime.Now.Date - TimeSpan.FromDays(MainModel._day), TimeSpan.FromDays(1));
-                    if (count != null)
-                    {
-                        MainModel.StepsToday = count.RunningStepCount + count.WalkingStepCount;
-                        MainModel.WalkingSteps = count.WalkingStepCount;
-                        MainModel.RunningSteps = count.RunningStepCount;
-                    }
-                    else
-                    {
-                        MainModel.WalkingSteps = MainModel.StepsToday = MainModel.RunningSteps = 0;
-                    }
+                    break;
                 }
             }
+            return steps;
         }
 
         /// <summary>
-        /// Returns a total number of steps for today.
+        /// Returns step count for given day
         /// </summary>
-        public async Task<uint> GetStepCountAsync()
+        /// <returns>Step count for given day</returns>
+        public async Task<StepCount> GetTotalStepCountAsync( DateTime day )
         {
-            try
+            if( _stepCounter != null && _sensorActive )
             {
-                var steps = await  _stepCounter.GetStepCountForRangeAsync(DateTime.Now.Date, DateTime.Now - DateTime.Now.Date);
-                if (steps != null)
-                    return steps.WalkingStepCount + steps.RunningStepCount;
+                return await _stepCounter.GetStepCountForRangeAsync( day.Date, TimeSpan.FromDays( 1 ) );
             }
-            catch (Exception e)
-            {  
+            else
+            {
+                return null;
             }
-            return 0;            
-        }
-
-        /// <summary>
-        /// Updates step counters every 5 seconds.
-        /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private async void PollTimerTick(object sender, EventArgs e)
-        {
-            await UpdateStepCountersAsync();
         }
 
         /// <summary>
@@ -248,7 +187,7 @@ namespace Steps
         /// </summary>
         public async Task InitializeAsync()
         {
-            if (Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Emulator)
+            if( Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Emulator )
             {
                 await InitializeSimulatorAsync();
             }
@@ -256,7 +195,6 @@ namespace Steps
             {
                 await InitializeSensorAsync();
             }
-            await UpdateModelAsync();
         }
 
         /// <summary>
@@ -264,20 +202,15 @@ namespace Steps
         /// </summary>
         private async Task InitializeSensorAsync()
         {
-            if (!await StepCounter.IsSupportedAsync())
+            if( _stepCounter == null )
             {
-                MessageBox.Show("Your device doesn't support Motion Data. Application will be closed", "Information", MessageBoxButton.OK);
-                Application.Current.Terminate();
-            }
-            if (_stepCounter == null)
-            {
-                await CallSensorCoreApiAsync(async () => { _stepCounter = await StepCounter.GetDefaultAsync(); });
+                await CallSensorCoreApiAsync( async () => { _stepCounter = await StepCounter.GetDefaultAsync(); } );
             }
             else
             {
-                await _stepCounter.ActivateAsync();                
+                await _stepCounter.ActivateAsync();
             }
-            _active = true;
+            _sensorActive = true;
         }
 
         /// <summary>
@@ -285,51 +218,38 @@ namespace Steps
         /// </summary>
         public async Task InitializeSimulatorAsync()
         {
-            var obj = await SenseRecording.LoadFromFileAsync("Simulations\\short recording.txt");
-            bool res = await CallSensorCoreApiAsync(async () => { _stepCounter = await StepCounterSimulator.GetDefaultAsync(obj, DateTime.Now - TimeSpan.FromHours(12)); });
-            if (!res)
+/*            var obj = await SenseRecording.LoadFromFileAsync( "Simulations\\short recording.txt" );
+            if( !await CallSensorCoreApiAsync( async () => { _stepCounter = await StepCounterSimulator.GetDefaultAsync( obj, DateTime.Now - TimeSpan.FromHours( 12 ) ); } ) )
+            {
                 Application.Current.Terminate();
-            _active = true;
+            }
+            _sensorActive = true;*/
         }
 
         /// <summary>
-        /// Helper function that fetches the first existing item for today.
+        /// Performs asynchronous Sensorcore SDK operation and handles any exceptions
         /// </summary>
-        private async Task<StepCounterReading> FirstReadingForTodayAsync()
-        {
-            // We look at the first value for today.
-            var results = await _stepCounter.GetStepCountHistoryAsync(DateTime.Now.Date - TimeSpan.FromDays(MainModel._day), TimeSpan.FromDays(1));
-            if (results.Count > 0)
-                return results[0];
-            else
-                return null;
-        }
-
-        /// <summary>
-        /// Helper function that catches SensorCore exceptions.
-        /// </summary>
-        /// <param name="action">Action for which the SensorCore should be activated.</param>
-        /// <param name="secondTry">Variable to determine is Sensor core has been activated. If not, gives a second try.</param>
-        /// <returns>True if SensorCore has been activated. False otherwise.</returns>
-        private async Task<bool> CallSensorCoreApiAsync(Func<Task> action, bool secondTry = false)
+        /// <param name="action">Action for which the SensorCore will be activated.</param>
+        /// <returns><c>true</c> if call was successful, <c>false</c> otherwise</returns>
+        private async Task<bool> CallSensorCoreApiAsync( Func<Task> action )
         {
             Exception failure = null;
             try
             {
                 await action();
             }
-            catch (Exception e)
+            catch( Exception e )
             {
                 failure = e;
             }
-            if (failure != null)
+            if( failure != null )
             {
-                switch (SenseHelper.GetSenseError(failure.HResult))
+                switch( SenseHelper.GetSenseError( failure.HResult ) )
                 {
                     case SenseError.LocationDisabled:
                     {
-                        MessageBoxResult res = MessageBox.Show("Location has been disabled. Do you want to open Location settings now?", "Information", MessageBoxButton.OKCancel);
-                        if (res == MessageBoxResult.OK)
+                        MessageBoxResult rc = MessageBox.Show( "Location has been disabled. Do you want to open Location settings now?", "Information", MessageBoxButton.OKCancel );
+                        if( rc == MessageBoxResult.OK )
                         {
                             await SenseHelper.LaunchLocationSettingsAsync();
                         }
@@ -337,33 +257,16 @@ namespace Steps
                     }
                     case SenseError.SenseDisabled:
                     {
-                        MessageBoxResult res2 = MessageBox.Show("Motion data has been disabled. Do you want to open Motion data settings now?", "Information", MessageBoxButton.OKCancel);
-                        if (res2 == MessageBoxResult.OK)
+                        MessageBoxResult rc = MessageBox.Show( "Motion data has been disabled. Do you want to open Motion data settings now?", "Information", MessageBoxButton.OKCancel );
+                        if( rc == MessageBoxResult.OK )
                         {
                             await SenseHelper.LaunchSenseSettingsAsync();
                         }
                         return false;
                     }
-                    case SenseError.SensorDeactivated:
-                    {
-                        // If SensorCore is disabled, try to activate it and call again.
-                        if (secondTry == false)
-                        {
-                            try
-                            {
-                                await _stepCounter.ActivateAsync();
-                            }
-                            catch (Exception e)
-                            {
-                                return false;
-                            }
-                            return await CallSensorCoreApiAsync(action, true);
-                        }
-                        return false;
-                    }
                     default:
                     {
-                        MessageBoxResult res3 = MessageBox.Show("Error:" + SenseHelper.GetSenseError(failure.HResult), "Information", MessageBoxButton.OK);
+                        MessageBox.Show( "Error: " + SenseHelper.GetSenseError( failure.HResult ), "Information", MessageBoxButton.OK );
                         return false;
                     }
                 }
@@ -374,41 +277,6 @@ namespace Steps
             }
         }
     }
-
-    /// <summary>
-    /// Toast helper
-    /// </summary>
-    public sealed class Helper
-    {
-        /// <summary>
-        /// Returns metter based on number of steps.
-        /// </summary>
-        /// <param name="steps">Number of steps.</param>
-        /// <returns>Metter value.</returns>
-        public static uint GetMeter(uint steps)
-        {
-            if (steps < 1400) { return 1; }
-            else if (steps < 2600) { return 2; }
-            else if (steps < 3800) { return 3; }
-            else if (steps < 5000) { return 4; }
-            else if (steps < 6200) { return 5; }
-            else if (steps < 7400) { return 6; }
-            else if (steps < 8600) { return 7; }
-            else { return 8; }
-        }
-
-        /// <summary>
-        /// Returns small metter based on number of steps.
-        /// </summary>
-        /// <param name="steps">Number of steps.</param>
-        /// <returns>Small metter value.</returns>
-        public static uint GetSmallMeter(uint steps)
-        {
-            if (steps < 2000) { return 0; }
-            else if (steps < 4300) { return 1; }
-            else if (steps < 7600) { return 2; }
-            else if (steps < 9000) { return 3; }
-            else { return 3; }
-        }
-    }
 }
+
+// end of file

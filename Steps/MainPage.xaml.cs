@@ -28,10 +28,9 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.UI.StartScreen;
 using Windows.UI;
+using System.Windows.Threading;
+using System.Threading;
 
-/// <summary>
-/// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
-/// </summary>
 namespace Steps
 {
     /// <summary>
@@ -39,10 +38,44 @@ namespace Steps
     /// </summary>
     public partial class MainPage : PhoneApplicationPage
     {
+        #region Private constants
         /// <summary>
         /// Tile ID
         /// </summary>
-        private const string _TileID = "SecondaryTile.Steps";
+        private const string TILE_ID = "SecondaryTile.Steps";
+
+        /// <summary>
+        /// Target daily step count
+        /// </summary>
+        private const uint TARGET_STEPS = 10000;
+
+        /// <summary>
+        /// Number of large meter images
+        /// </summary>
+        private const uint NUM_LARGE_METER_IMAGES = 9;
+
+        /// <summary>
+        /// Number of small meter images
+        /// </summary>
+        private const uint NUM_SMALL_METER_IMAGES = 4;
+        #endregion
+
+        #region Private members
+        /// <summary>
+        /// Model for the app
+        /// </summary>
+        private MainModel _model = null;
+
+        /// <summary>
+        /// Synchronization object
+        /// </summary>
+        private SemaphoreSlim _sync = new SemaphoreSlim( 1 );
+
+        /// <summary>
+        /// Timer to update step counts periodically
+        /// </summary>
+        private DispatcherTimer _pollTimer;
+        #endregion
 
         /// <summary>
         /// Constructor
@@ -50,7 +83,9 @@ namespace Steps
         public MainPage()
         {
             InitializeComponent();
-            LayoutRoot.DataContext = App.Engine.MainModel;
+
+            _model = new MainModel();
+            LayoutRoot.DataContext = _model;
             StepGraph.Loaded += StepGraph_Loaded;
         }
 
@@ -59,8 +94,13 @@ namespace Steps
         /// Called when a page is no longer the active page in a frame.
         /// </summary>
         /// <param name="e">Provides data for non-cancelable navigation events</param>
-        protected async override void OnNavigatedFrom(NavigationEventArgs e)
+        protected async override void OnNavigatedFrom( NavigationEventArgs e )
         {
+            if( _pollTimer != null )
+            {
+                _pollTimer.Stop();
+                _pollTimer = null;
+            }
             await App.Engine.DeactivateAsync();
         }
 
@@ -68,129 +108,123 @@ namespace Steps
         /// Called when a page becomes the active page in a frame.
         /// </summary>
         /// <param name="e">Provides data for non-cancelable navigation events</param>
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo( NavigationEventArgs e )
         {
-            await InitCore();
+            await App.Engine.ValidateSettingsAsync();
             await App.Engine.ActivateAsync();
             UpdateMenuAndAppBarIcons();
+
+            await _sync.WaitAsync();
+            try
+            {
+                await _model.UpdateAsync();
+            }
+            finally
+            {
+                _sync.Release();
+            }
+
+            // Start poll timer to update steps counts periodically
+            if( _pollTimer == null )
+            {
+                _pollTimer = new DispatcherTimer();
+                _pollTimer.Interval = TimeSpan.FromSeconds( 5 );
+                _pollTimer.Tick += PollTimerTick;
+                _pollTimer.Start();
+            }
         }
         #endregion
 
-        private async Task InitCore()
+        /// <summary>
+        /// Step counter poll timer callback
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private async void PollTimerTick( object sender, EventArgs e )
         {
-            if (!await StepCounter.IsSupportedAsync())
+            await _sync.WaitAsync();
+            try
             {
-                MessageBoxResult dlg = MessageBox.Show("Unfortunately this device does not support step counting");
-            }
-            else
-            {
-                // MotionDataSettings settings = await SenseHelper.GetSettingsAsync();
-                // Starting from version 2 of Motion data settings Step counter and Acitivity monitor are always available. In earlier versions system
-                // location setting and Motion data had to be enabled.
-                uint apiSet = await SenseHelper.GetSupportedApiSetAsync();
-                MotionDataSettings settings = await SenseHelper.GetSettingsAsync();
-                if (apiSet > 2)
+                // No need to update if we are not looking at today
+                if( _model.DayOffset == 0 )
                 {
-                    if (!settings.LocationEnabled)
-                    {
-                        MessageBoxResult dlg = MessageBox.Show("In order to count steps you need to enable location in system settings. Do you want to open settings now?", "Information", MessageBoxButton.OKCancel);
-                        if (dlg == MessageBoxResult.OK)
-                            await SenseHelper.LaunchLocationSettingsAsync();
-                    }
-                    if (!settings.PlacesVisited)
-                    {
-                        MessageBoxResult dlg = new MessageBoxResult();
-                        if (settings.Version < 2)
-                        {
-                            dlg = MessageBox.Show("In order to count steps you need to enable Motion data collection in Motion data settings. Do you want to open settings now?", "Information", MessageBoxButton.OKCancel);
-                        }
-                        else
-                        {
-                            dlg = MessageBox.Show("In order to collect and view visited places you need to enable Places visited in Motion data settings. Do you want to open settings now? if no, application will exit", "Information", MessageBoxButton.OKCancel);
-                        }
-                        if (dlg == MessageBoxResult.OK)
-                            await SenseHelper.LaunchSenseSettingsAsync();
-                        else
-                            Application.Current.Terminate();
-                    }
+                    await _model.UpdateAsync();
                 }
+            }
+            finally
+            {
+                _sync.Release();
             }
         }
 
         /// <summary>
         /// Executes when the Step graph finished loading.
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private void StepGraph_Loaded(object sender, RoutedEventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private void StepGraph_Loaded( object sender, RoutedEventArgs e )
         {
-            App.Engine.MainModel.SetParameters(StepGraph.ActualWidth, StepGraph.ActualHeight);
+            _model.SetDimensions( StepGraph.ActualWidth, StepGraph.ActualHeight );
         }
 
         /// <summary>
-        /// User taps on step graph. This will change max value for the graph.
+        /// Step graph tap event handler
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private void StepGraph_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private void StepGraph_Tap( object sender, System.Windows.Input.GestureEventArgs e )
         {
-            App.Engine.MainModel.ChangeMax();
+            _model.CycleZoomLevel();
         }
 
         /// <summary>
-        /// Navigates to the specified page.
+        /// About menu item click event handler
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private void Click_NavigateToAbout(object sender, EventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private void AboutMenuItem_Click( object sender, EventArgs e )
         {
-            NavigationService.Navigate(new Uri("/AboutPage.xaml", UriKind.Relative));
+            NavigationService.Navigate( new Uri( "/AboutPage.xaml", UriKind.Relative ) );
         }
 
         /// <summary>
-        /// Removes background agent.
+        /// Removes background task
         /// </summary>
-        /// <param name="taskName">Name of task to be removed.</param>
-        /// <returns>A task.</returns>
-        private async static Task RemoveBackgroundTaskAsync(String taskName)
+        /// <param name="taskName">Name of task to be removed</param>
+        /// <returns>Asynchronous task</returns>
+        private async static Task RemoveBackgroundTaskAsync( String taskName )
         {
             BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
-            if (result != BackgroundAccessStatus.Denied)
+            if( result != BackgroundAccessStatus.Denied )
             {
                 // Remove previous registration
-                foreach (var task in BackgroundTaskRegistration.AllTasks)
+                foreach( var task in BackgroundTaskRegistration.AllTasks )
                 {
-                    if (task.Value.Name == taskName)
+                    if( task.Value.Name == taskName )
                     {
-                        task.Value.Unregister(true);
+                        task.Value.Unregister( true );
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Removes old background agent if exists and adds new background task.
+        /// Registers background task
         /// </summary>
-        /// <param name="trigger">Parameter for triggered events.</param>
-        /// <param name="taskName">Name of task to be removed.</param>
-        /// <param name="taskEntryPoint">Entry point of the task to be removed.</param>
-        /// <returns>A task.</returns>
-        private async static Task RegisterBackgroundTaskAsync(IBackgroundTrigger trigger, String taskName, String taskEntryPoint)
+        /// <param name="trigger">Task trigger</param>
+        /// <param name="taskName">Task name</param>
+        /// <param name="taskEntryPoint">Task entry point</param>
+        /// <returns>Asynchronous task</returns>
+        private async static Task RegisterBackgroundTaskAsync( IBackgroundTrigger trigger, String taskName, String taskEntryPoint )
         {
             BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
-            if (result != BackgroundAccessStatus.Denied)
+            if( result != BackgroundAccessStatus.Denied )
             {
-                // Remove previous registration
-                foreach (var task in BackgroundTaskRegistration.AllTasks)
-                {
-                    if (task.Value.Name == taskName)
-                    {
-                        task.Value.Unregister(true);
-                    }
-                }
-                // Register new trigger
+                await RemoveBackgroundTaskAsync( taskName );
+
+                // Register task
                 BackgroundTaskBuilder myTaskBuilder = new BackgroundTaskBuilder();
-                myTaskBuilder.SetTrigger(trigger);
+                myTaskBuilder.SetTrigger( trigger );
                 myTaskBuilder.TaskEntryPoint = taskEntryPoint;
                 myTaskBuilder.Name = taskName;
                 BackgroundTaskRegistration myTask = myTaskBuilder.Register();
@@ -198,136 +232,132 @@ namespace Steps
         }
 
         /// <summary>
-        /// Creates or removes a secondary tile.
+        /// Creates or removes a secondary tile
         /// </summary>
-        /// <param name="removeTile">Variable to determine if a tile exists and needs to be removed.</param>
-        /// <returns>A task.</returns>
-        private async Task CreateOrRemoveTileAsync(bool removeTile)
+        /// <param name="removeTile"><c>true</c> to remove tile, <c>false</c> to create tile</param>
+        /// <returns>Asynchronous task</returns>
+        private async Task CreateOrRemoveTileAsync( bool removeTile )
         {
-            if (!removeTile)
+            if( !removeTile )
             {
-                uint stepCount = await App.Engine.GetStepCountAsync();
-                uint meter = Helper.GetMeter(stepCount);
-                uint meterSmall = Helper.GetSmallMeter(stepCount);
+                var steps = await App.Engine.GetTotalStepCountAsync( DateTime.Now.Date );
+                uint stepCount = steps.WalkingStepCount + steps.RunningStepCount;
+                uint meter = ( NUM_SMALL_METER_IMAGES - 1 ) * Math.Min( stepCount, TARGET_STEPS ) / TARGET_STEPS;
+                uint meterSmall = ( NUM_LARGE_METER_IMAGES - 1 ) * Math.Min( stepCount, TARGET_STEPS ) / TARGET_STEPS;
                 try
                 {
-                    var secondaryTile = new SecondaryTile(_TileID, "Steps", "/MainPage.xaml", new Uri("ms-appx:///Assets/Tiles/square" + meterSmall + ".png", UriKind.Absolute), TileSize.Square150x150);
-                    secondaryTile.VisualElements.Square71x71Logo = new Uri("ms-appx:///Assets/Tiles/small_square" + meterSmall + ".png", UriKind.Absolute);
+                    var secondaryTile = new SecondaryTile( TILE_ID, "Steps", "/MainPage.xaml", new Uri( "ms-appx:///Assets/Tiles/square" + meterSmall + ".png", UriKind.Absolute ), TileSize.Square150x150 );
+                    secondaryTile.VisualElements.Square71x71Logo = new Uri( "ms-appx:///Assets/Tiles/small_square" + meterSmall + ".png", UriKind.Absolute );
                     secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
                     secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = false;
                     secondaryTile.VisualElements.ShowNameOnWide310x150Logo = false;
-                    secondaryTile.VisualElements.BackgroundColor = Color.FromArgb(255, 0, 138, 0);
-                    secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/Tiles/wide" + meter + ".png", UriKind.Absolute);
+                    secondaryTile.VisualElements.BackgroundColor = Color.FromArgb( 255, 0, 138, 0 );
+                    secondaryTile.VisualElements.Wide310x150Logo = new Uri( "ms-appx:///Assets/Tiles/wide" + meter + ".png", UriKind.Absolute );
                     secondaryTile.RoamingEnabled = false;
                     await secondaryTile.RequestCreateAsync();
                 }
-                catch (Exception exp)
+                catch( Exception )
                 {
                 }
-                return;
             }
             else
             {
-                SecondaryTile secondaryTile = new SecondaryTile(_TileID);
+                SecondaryTile secondaryTile = new SecondaryTile( TILE_ID );
                 await secondaryTile.RequestDeleteAsync();
                 UpdateMenuAndAppBarIcons();
             }
         }
 
         /// <summary>
-        /// Updates menu and app bar icons.
+        /// Updates menu and app bar icons
         /// </summary>
         private void UpdateMenuAndAppBarIcons()
         {
             // Show unpin or pin button
-            ApplicationBarIconButton btn = (ApplicationBarIconButton)ApplicationBar.Buttons[2];
-            if (!SecondaryTile.Exists(_TileID))
+            ApplicationBarIconButton btn = (ApplicationBarIconButton)ApplicationBar.Buttons[ 2 ];
+            if( !SecondaryTile.Exists( TILE_ID ) )
             {
-                btn.IconUri = new Uri("Assets/Images/pin-48px.png", UriKind.Relative);
+                btn.IconUri = new Uri( "Assets/Images/pin-48px.png", UriKind.Relative );
                 btn.Text = "Pin";
             }
             else
             {
-                btn.IconUri = new Uri("Assets/Images/unpin-48px.png", UriKind.Relative);
+                btn.IconUri = new Uri( "Assets/Images/unpin-48px.png", UriKind.Relative );
                 btn.Text = "Unpin";
             }
-            // Disable the back button if we show 7th day in the past
-            ApplicationBarIconButton back = (ApplicationBarIconButton)ApplicationBar.Buttons[0];
-            if (App.Engine.MainModel._day == 7)
-                back.IsEnabled = false;
-            else
-                back.IsEnabled = true;
-            // Disable next button if we show today's steps
-            ApplicationBarIconButton next = (ApplicationBarIconButton)ApplicationBar.Buttons[1];
-            if (App.Engine.MainModel._day == 0)
-                next.IsEnabled = false;
-            else
-                next.IsEnabled = true;
+            ApplicationBarIconButton back = (ApplicationBarIconButton)ApplicationBar.Buttons[ 0 ];
+            back.IsEnabled = _model.DayOffset != 6;
+            ApplicationBarIconButton next = (ApplicationBarIconButton)ApplicationBar.Buttons[ 1 ];
+            next.IsEnabled = _model.DayOffset != 0;
         }
 
         /// <summary>
-        /// Registers/Unregisters tile.
+        /// Creates secondary tile if it is not yet created or removes the tile if it already exists.
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private async void ApplicationBarRegisterUnRegisterTile(object sender, EventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private async void ApplicationBar_PinTile( object sender, EventArgs e )
         {
-            // Register background task that updates live tile
-            bool removeTile = SecondaryTile.Exists(_TileID);
-            if (removeTile)
+            bool removeTile = SecondaryTile.Exists( TILE_ID );
+            if( removeTile )
             {
-                await RemoveBackgroundTaskAsync("StepTriggered");
+                await RemoveBackgroundTaskAsync( "StepTriggered" );
             }
             else
             {
-                if (Microsoft.Devices.Environment.DeviceType != Microsoft.Devices.DeviceType.Emulator)
+                ApiSupportedCapabilities caps = await SenseHelper.GetSupportedCapabilitiesAsync();
+                // Use StepCounterUpdate to trigger live tile update if it is supported. Otherwise we use time trigger
+                if( caps.StepCounterTrigger )
                 {
-                    ApiSupportedCapabilities caps = await SenseHelper.GetSupportedCapabilitiesAsync();
-                    // Use StepCounterUpdate to trigger live tile update if it is supported. Otherwise we use time trigger
-                    if (caps.StepCounterTrigger)
-                    {
-                        var myTrigger = new DeviceManufacturerNotificationTrigger(SenseTrigger.StepCounterUpdate, false);
-                        await RegisterBackgroundTaskAsync(myTrigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
-                    }
-                    else
-                    {
-                        BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
-                        IBackgroundTrigger trigger = new TimeTrigger(15, false);
-                        await RegisterBackgroundTaskAsync(trigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
-                    }
+                    var myTrigger = new DeviceManufacturerNotificationTrigger( SenseTrigger.StepCounterUpdate, false );
+                    await RegisterBackgroundTaskAsync( myTrigger, "StepTriggered", "BackgroundTasks.StepTriggerTask" );
                 }
                 else
                 {
-                    // On emulator we use always TimeTrigger
                     BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
-                    IBackgroundTrigger trigger = new TimeTrigger(15, false);
-                    await RegisterBackgroundTaskAsync(trigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
+                    IBackgroundTrigger trigger = new TimeTrigger( 15, false );
+                    await RegisterBackgroundTaskAsync( trigger, "StepTriggered", "BackgroundTasks.StepTriggerTask" );
                 }
             }
-            await CreateOrRemoveTileAsync(removeTile);
-            return;
+            await CreateOrRemoveTileAsync( removeTile );
         }
 
         /// <summary>
-        /// Select next day.
+        /// Next day button click event handler
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private async void ApplicationBarIconButton_Click_Next(object sender, EventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private async void ApplicationBarIconButtonNext_Click( object sender, EventArgs e )
         {
-            await App.Engine.ChangeDayAsync(-1);
-            UpdateMenuAndAppBarIcons();
+            await _sync.WaitAsync();
+            try
+            {
+                await _model.DecreaseDayOffsetAsync();
+                UpdateMenuAndAppBarIcons();
+            }
+            finally
+            {
+                _sync.Release();
+            }
         }
 
         /// <summary>
-        /// Select previous day.
+        /// Previous day button click event handler
         /// </summary>
-        /// <param name="sender">The control that the action is for.</param>
-        /// <param name="e">Parameter that contains the event data.</param>
-        private async void ApplicationBarIconButton_Click_Back(object sender, EventArgs e)
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private async void ApplicationBarIconButtonBack_Click( object sender, EventArgs e )
         {
-            await App.Engine.ChangeDayAsync(1);
-            UpdateMenuAndAppBarIcons();
+            await _sync.WaitAsync();
+            try
+            {
+                await _model.IncreaseDayOffsetAsync();
+                UpdateMenuAndAppBarIcons();
+            }
+            finally
+            {
+                _sync.Release();
+            }
         }
     }
 }

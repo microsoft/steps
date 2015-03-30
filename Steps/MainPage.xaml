@@ -46,11 +46,11 @@
                 <RowDefinition Height="15*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Margin="0,0,0,-20">
-                <TextBlock Text="{Binding Date}" FontSize="25" TextAlignment="left"/>
+                <TextBlock Text="{Binding DateString}" FontSize="25" TextAlignment="left"/>
             </Grid>
             <Grid Grid.Row="1" >
                 <Viewbox VerticalAlignment="Stretch" Height="Auto" Margin="0,-20,0,-20" HorizontalAlignment="Left">
-                    <TextBlock  Name="StepsToday" Text="{Binding StepsToday}" TextAlignment="left"/>
+                    <TextBlock  Name="TotalStepsText" Text="{Binding TotalSteps}" TextAlignment="left"/>
                 </Viewbox>
             </Grid>
             <Grid x:Name="StepCounters" Grid.Row="3">
@@ -70,13 +70,13 @@
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Name="WalkingStepsToday" Text="{Binding WalkingSteps}" Grid.ColumnSpan="2" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                    <TextBlock Name="WalkingStepsText" Text="{Binding TotalWalkingSteps}" Grid.ColumnSpan="2" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="0">
                     <TextBlock Text="running steps" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="1">
-                    <TextBlock Name="RunningStepsToday" Text="{Binding RunningSteps}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                    <TextBlock Name="RunningStepsText" Text="{Binding TotalRunningSteps}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                 </Grid>
             </Grid>
             <Grid Grid.Row="5" >
@@ -86,10 +86,10 @@
                             <SolidColorBrush Color="White" Opacity="0.25"/>
                         </Rectangle.Fill>
                     </Rectangle>
-                    <Line x:Name="Line"  X1="{Binding Margin}" Y1="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" X2="{Binding ElementName=StepGraph, Path=ActualWidth, Converter={StaticResource Margin}}" Y2="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Stroke="White" StrokeThickness="2" />
+                    <Line x:Name="Line"  X1="{Binding GraphMarginX}" Y1="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" X2="{Binding ElementName=StepGraph, Path=ActualWidth, Converter={StaticResource Margin}}" Y2="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Stroke="White" StrokeThickness="2" />
                     <Path Stroke="Beige" StrokeThickness="4" Data="{Binding PathString}" />
-                    <TextBlock Text="{Binding Max}" Canvas.Top="0" Canvas.Left="{Binding Margin}"/>
-                    <TextBlock Text="{Binding Half}" Canvas.Top="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Canvas.Left="{Binding Margin}"/>
+                    <TextBlock Text="{Binding ScaleMax}" Canvas.Top="0" Canvas.Left="{Binding GraphMarginX}"/>
+                    <TextBlock Text="{Binding ScaleHalf}" Canvas.Top="{Binding ElementName=StepGraph, Path=ActualHeight, Converter={StaticResource Half}}" Canvas.Left="{Binding GraphMarginX}"/>
                 </Canvas>
             </Grid>
             <Grid Grid.Row="6" >
@@ -120,11 +120,11 @@
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar Mode="Default" Opacity="0.5" IsMenuEnabled="True" IsVisible="True">
-            <shell:ApplicationBarIconButton IconUri="Assets/Images/back.png" Text="back" Click="ApplicationBarIconButton_Click_Back" />
-            <shell:ApplicationBarIconButton IconUri="Assets/Images/next.png" Text="next" Click="ApplicationBarIconButton_Click_Next" />
-            <shell:ApplicationBarIconButton IconUri="Assets/Images/pin-48px.png" Text="pin" Click="ApplicationBarRegisterUnRegisterTile"/>
+            <shell:ApplicationBarIconButton IconUri="Assets/Images/back.png" Text="back" Click="ApplicationBarIconButtonBack_Click" />
+            <shell:ApplicationBarIconButton IconUri="Assets/Images/next.png" Text="next" Click="ApplicationBarIconButtonNext_Click" />
+            <shell:ApplicationBarIconButton IconUri="Assets/Images/pin-48px.png" Text="pin" Click="ApplicationBar_PinTile"/>
             <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="about" Click="Click_NavigateToAbout"  />
+                <shell:ApplicationBarMenuItem Text="about" Click="AboutMenuItem_Click"  />
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>

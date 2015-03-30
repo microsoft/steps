@@ -27,62 +27,42 @@ using Lumia.Sense;
 namespace BackgroundTasks
 {
     /// <summary>
-    /// Toast helper
-    /// </summary>
-    public sealed class Helper
-    {
-        /// <summary>
-        /// Returns metter based on number of steps.
-        /// </summary>
-        /// <param name="steps">Number of steps.</param>
-        /// <returns>Metter value.</returns>
-        public static uint GetMeter(uint steps)
-        {
-            if (steps < 1400) { return 1; }
-            else if (steps < 2600) { return  2; }
-            else if (steps < 3800) { return  3; }
-            else if (steps < 5000) { return  4; }
-            else if (steps < 6200) { return  5; }
-            else if (steps < 7400) { return  6; }
-            else if (steps < 8600) { return  7; }
-             else { return 8; } 
-        }
-
-        /// <summary>
-        /// Returns small metter based on number of steps.
-        /// </summary>
-        /// <param name="steps">Number of steps.</param>
-        /// <returns>Small metter value.</returns>
-        public static uint GetSmallMeter(uint steps)
-        {
-            if (steps < 2000) { return 0; }
-            else if (steps < 4300) { return 1; }
-            else if (steps < 7600) { return 2; }
-            else if (steps < 9000) { return 3; }
-            else { return 3; }
-        }
-    }
-
-    /// <summary>
     /// Background task class for step counter trigger
     /// </summary>
     public sealed class StepTriggerTask : IBackgroundTask
     {
-        #region Variable declarations
+        #region Constant definitions
         /// <summary>
         /// Tile ID
         /// </summary>
-        private const string _TileID = "SecondaryTile.Steps";
+        private const string TILE_ID = "SecondaryTile.Steps";
 
         /// <summary>
-        /// Number o steps
+        /// Target daily step count
         /// </summary>
-        StepCount _steps;
+        private const uint TARGET_STEPS = 10000;
+
+        /// <summary>
+        /// Number of large meter images
+        /// </summary>
+        private const uint NUM_LARGE_METER_IMAGES = 9;
+
+        /// <summary>
+        /// Number of small meter images
+        /// </summary>
+        private const uint NUM_SMALL_METER_IMAGES = 4;
+        #endregion
+        
+        #region Private members
+        /// <summary>
+        /// Number of steps
+        /// </summary>
+        private StepCount _steps;
 
         /// <summary>
         /// Sens error code
         /// </summary>
-        SenseError _lastError;
+        private SenseError _lastError;
         #endregion
 
         /// <summary>
@@ -90,84 +70,111 @@ namespace BackgroundTasks
         /// the associated background task has been triggered.
         /// </summary>
         /// <param name="taskInstance">An interface to an instance of the background task</param>
-        public async void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run( IBackgroundTaskInstance taskInstance )
         {
             BackgroundTaskDeferral deferral = taskInstance.GetDeferral();
-            if (await GetStepsAsync())
+            try
             {
-                UpdateTile(_steps.RunningStepCount + _steps.WalkingStepCount);
+                if( await GetStepsAsync() )
+                {
+                    UpdateTile( _steps.RunningStepCount + _steps.WalkingStepCount );
+                }
+            }
+            catch( Exception )
+            {
             }
             deferral.Complete();
         }
 
         /// <summary>
+        /// Returns small live tile image index
+        /// </summary>
+        /// <param name="stepCount">Current step count</param>
+        /// <returns>Small live tile image index</returns>
+        public static uint GetSmallLiveTileImageIndex( uint stepCount )
+        {
+            return ( NUM_SMALL_METER_IMAGES - 1 ) * Math.Min( stepCount, TARGET_STEPS ) / TARGET_STEPS;
+        }
+
+        /// <summary>
+        /// Returns large live tile image index
+        /// </summary>
+        /// <param name="stepCount">Current step count</param>
+        /// <returns>Large live tile image index</returns>
+        public static uint GetLargeLiveTileImageIndex( uint stepCount )
+        {
+            return ( NUM_LARGE_METER_IMAGES - 1 ) * Math.Min( stepCount, TARGET_STEPS ) / TARGET_STEPS;
+        }
+
+        /// <summary>
         /// Gets number of steps for current day
         /// </summary>
-        /// <returns>True</returns>
+        /// <returns><c>true</c> if steps were successfully fetched, <c>false</c> otherwise</returns>
         private async Task<bool> GetStepsAsync()
         {
             StepCounter stepCounter = null;
             try
             {
                 stepCounter = await StepCounter.GetDefaultAsync();
-                _steps = await stepCounter.GetStepCountForRangeAsync(DateTime.Now.Date, DateTime.Now - DateTime.Now.Date);
+                _steps = await stepCounter.GetStepCountForRangeAsync( 
+                    DateTime.Now.Date, 
+                    DateTime.Now - DateTime.Now.Date );
             }
-            catch (Exception e)
+            catch( Exception e )
             {
-                _lastError = SenseHelper.GetSenseError(e.HResult);
+                _lastError = SenseHelper.GetSenseError( e.HResult );
                 return false;
             }
             finally
             {
-                if (stepCounter != null) 
+                if( stepCounter != null )
+                {
                     stepCounter.Dispose();
+                }
             }
             return true;
         }
 
         /// <summary>
-        /// Updates the tile from the home screen
+        /// Update the live tile
         /// </summary>
         /// <param name="stepCount">Step count</param>
-        /// <returns>True if tile has been upated.</returns>
-        private bool UpdateTile(uint stepCount)
+        private void UpdateTile( uint stepCount )
         {
-            uint meter = Helper.GetMeter(stepCount);
-            uint meter_small = Helper.GetSmallMeter(stepCount);
-            var smallTile = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare71x71Image);
-            XmlNodeList imageAttribute = smallTile.GetElementsByTagName("image");
-            ((XmlElement)imageAttribute[0]).SetAttribute("src", "ms-appx:///Assets/Tiles/small_square" + meter_small + ".png");
-            var bindingSmall = (XmlElement)smallTile.GetElementsByTagName("binding").Item(0);
+            uint meterIndex = GetLargeLiveTileImageIndex( stepCount );
+            uint smallMeterIndex = GetSmallLiveTileImageIndex( stepCount );
+            var smallTile = TileUpdateManager.GetTemplateContent( TileTemplateType.TileSquare71x71Image );
+            XmlNodeList imageAttribute = smallTile.GetElementsByTagName( "image" );
+            ( (XmlElement)imageAttribute[ 0 ] ).SetAttribute( "src", "ms-appx:///Assets/Tiles/small_square" + smallMeterIndex + ".png" );
+            var bindingSmall = (XmlElement)smallTile.GetElementsByTagName( "binding" ).Item( 0 );
+
             // Square tile
-            var SquareTile = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150PeekImageAndText01);
-            var tileTextAttributes = SquareTile.GetElementsByTagName("text");
-            tileTextAttributes[0].AppendChild(SquareTile.CreateTextNode((_steps.WalkingStepCount + _steps.RunningStepCount).ToString() + " steps"));
-            tileTextAttributes[1].AppendChild(SquareTile.CreateTextNode(_steps.RunningStepCount.ToString() + " running steps"));
-            tileTextAttributes[2].AppendChild(SquareTile.CreateTextNode(_steps.WalkingStepCount.ToString() + " walking steps"));
-            var bindingSquare = (XmlElement)SquareTile.GetElementsByTagName("binding").Item(0);
-            bindingSquare.SetAttribute("branding", "none");
-            XmlNodeList img = SquareTile.GetElementsByTagName("image");
-            ((XmlElement)img[0]).SetAttribute("src", "ms-appx:///Assets/Tiles/square" + meter_small + ".png");
-            // Provide a wide tile
-            var wideTileXml = TileUpdateManager.GetTemplateContent(TileTemplateType.TileWide310x150ImageAndText02);
-            var squareTileTextAttributes = wideTileXml.GetElementsByTagName("text");
-            squareTileTextAttributes[0].AppendChild(wideTileXml.CreateTextNode(stepCount.ToString() + " steps today"));
-            imageAttribute = wideTileXml.GetElementsByTagName("image");
-            ((XmlElement)imageAttribute[0]).SetAttribute("src", "ms-appx:///Assets/Tiles/wide"+meter+".png");
-            var bindingWide = (XmlElement)wideTileXml.GetElementsByTagName("binding").Item(0);
-            bindingWide.SetAttribute("branding", "none");
-            // Add the wide tile to the notification.
-            var nodeWide = smallTile.ImportNode(bindingWide, true);
-            var nodeSquare = smallTile.ImportNode(bindingSquare, true);
-            smallTile.GetElementsByTagName("visual").Item(0).AppendChild(nodeWide);
-            smallTile.GetElementsByTagName("visual").Item(0).AppendChild(nodeSquare);
-            // Create the notification based on the XML content.
-            var tileNotification = new TileNotification(smallTile);
-            // Create a secondary tile updater and pass it the secondary tileId
-            var tileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile(_TileID);
-            // Send the notification to the secondary tile.
-            tileUpdater.Update(tileNotification);
-            return true;
+            var SquareTile = TileUpdateManager.GetTemplateContent( TileTemplateType.TileSquare150x150PeekImageAndText01 );
+            var tileTextAttributes = SquareTile.GetElementsByTagName( "text" );
+            tileTextAttributes[ 0 ].AppendChild( SquareTile.CreateTextNode( ( _steps.WalkingStepCount + _steps.RunningStepCount ).ToString() + " steps" ) );
+            tileTextAttributes[ 1 ].AppendChild( SquareTile.CreateTextNode( _steps.RunningStepCount.ToString() + " running steps" ) );
+            tileTextAttributes[ 2 ].AppendChild( SquareTile.CreateTextNode( _steps.WalkingStepCount.ToString() + " walking steps" ) );
+            var bindingSquare = (XmlElement)SquareTile.GetElementsByTagName( "binding" ).Item( 0 );
+            bindingSquare.SetAttribute( "branding", "none" );
+            XmlNodeList img = SquareTile.GetElementsByTagName( "image" );
+            ( (XmlElement)img[ 0 ] ).SetAttribute( "src", "ms-appx:///Assets/Tiles/square" + smallMeterIndex + ".png" );
+            
+            // Wide tile
+            var wideTileXml = TileUpdateManager.GetTemplateContent( TileTemplateType.TileWide310x150ImageAndText02 );
+            var squareTileTextAttributes = wideTileXml.GetElementsByTagName( "text" );
+            squareTileTextAttributes[ 0 ].AppendChild( wideTileXml.CreateTextNode( stepCount.ToString() + " steps today" ) );
+            imageAttribute = wideTileXml.GetElementsByTagName( "image" );
+            ( (XmlElement)imageAttribute[ 0 ] ).SetAttribute( "src", "ms-appx:///Assets/Tiles/wide" + meterIndex + ".png" );
+            var bindingWide = (XmlElement)wideTileXml.GetElementsByTagName( "binding" ).Item( 0 );
+            bindingWide.SetAttribute( "branding", "none" );
+
+            var nodeWide = smallTile.ImportNode( bindingWide, true );
+            var nodeSquare = smallTile.ImportNode( bindingSquare, true );
+            smallTile.GetElementsByTagName( "visual" ).Item( 0 ).AppendChild( nodeWide );
+            smallTile.GetElementsByTagName( "visual" ).Item( 0 ).AppendChild( nodeSquare );
+            var tileNotification = new TileNotification( smallTile );
+            var tileUpdater = TileUpdateManager.CreateTileUpdaterForSecondaryTile( TILE_ID );
+            tileUpdater.Update( tileNotification );
         }
     }
 }

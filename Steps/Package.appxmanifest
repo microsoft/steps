@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="NokiaDeveloper.StepsLumiaSensorCoreSDKsample" Publisher="CN=4AD6DA08-6C39-4A10-98CC-3243374DA59C" Version="1.1.0.3" />
+  <Identity Name="NokiaDeveloper.StepsLumiaSensorCoreSDKsample" Publisher="CN=4AD6DA08-6C39-4A10-98CC-3243374DA59C" Version="1.1.0.4" />
   <mp:PhoneIdentity PhoneProductId="c80afab2-39d5-406a-abbe-3777e3f0b625" PhonePublisherId="5bda2eda-1ca9-45c9-9a87-77701f1fd0ca" />
   <Properties>
     <DisplayName>Steps – Lumia SensorCore SDK sample</DisplayName>
@@ -48,19 +48,6 @@
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Lumia.Sense.Testing.dll</Path>
-        <ActivatableClass ActivatableClassId="Lumia.Sense.StepCounter" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.AltitudeMeterSimulator" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.SenseRecorder" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.SenseRecording" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.TrackPointMonitorSimulator" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.StepCounterSimulator" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.PlaceMonitorSimulator" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Lumia.Sense.Testing.ActivityMonitorSimulator" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
         <Path>Lumia.Sense.dll</Path>
         <ActivatableClass ActivatableClassId="Lumia.Sense.StepCounter" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Lumia.Sense.ActivityMonitor" ThreadingModel="both" />
@@ -75,6 +62,14 @@
         <ActivatableClass ActivatableClassId="Lumia.Sense.Place" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Lumia.Sense.AltitudeMeter" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Lumia.Sense.PlaceMonitor" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Lumia.Internal.HMBClient.dll</Path>
+        <ActivatableClass ActivatableClassId="Lumia.Internal.HMBClient.HMBMessage" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Lumia.Internal.HMBClient.HMBServiceClient" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Lumia.Internal.HMBClient.HMBMessageEventArgs" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
