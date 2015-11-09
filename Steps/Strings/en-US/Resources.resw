@@ -141,6 +141,9 @@
   <data name="ApplicationSuite.Text" xml:space="preserve">
     <value>LUMIA SENSORCORE SAMPLE</value>
   </data>
+  <data name="BackButton.Label" xml:space="preserve">
+    <value>back</value>
+  </data>
   <data name="DetailedSetting.DataCollectionQuality" xml:space="preserve">
     <value>To get more accurate data you need to enable detailed data collection in Motion data settings. Do you want to open settings now?</value>
   </data>
@@ -165,13 +168,13 @@ The application will now exit.</value>
     <value>Lumia SensorCore</value>
   </data>
   <data name="NextButton.Label" xml:space="preserve">
-    <value>next day</value>
+    <value>next</value>
   </data>
   <data name="NoLocationOrMotionDataError.Text" xml:space="preserve">
     <value>This application does not function without location and motion data. The application will be closed.</value>
   </data>
-  <data name="RefreshButton.Label" xml:space="preserve">
-    <value>update diagram</value>
+  <data name="PinButton.Label" xml:space="preserve">
+    <value>pin</value>
   </data>
   <data name="TimeWindow.Today" xml:space="preserve">
     <value>Today</value>
