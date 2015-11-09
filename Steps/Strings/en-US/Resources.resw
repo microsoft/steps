@@ -182,6 +182,9 @@ The application will now exit.</value>
   <data name="TimeWindow.Yesterday" xml:space="preserve">
     <value>Yesterday</value>
   </data>
+  <data name="UnpinLabel" xml:space="preserve">
+    <value>unpin</value>
+  </data>
   <data name="VersionText.Text" xml:space="preserve">
     <value>Steps version: </value>
   </data>

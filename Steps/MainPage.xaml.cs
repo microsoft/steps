@@ -20,9 +20,12 @@
  */
 using System;
 using System.Threading;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 namespace Steps
 {
@@ -64,7 +67,13 @@ namespace Steps
         /// <summary>
         /// Timer to update step counts periodically
         /// </summary>
-        //private DispatcherTimer _pollTimer;
+        private DispatcherTimer _pollTimer;
+
+        /// <summary>
+        /// Loads resources dynamically
+        /// </summary>
+        private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+
         #endregion
 
         public MainPage()
@@ -74,6 +83,76 @@ namespace Steps
             _model = new MainModel();
             LayoutRoot.DataContext = _model;
             StepGraph.Loaded += StepGraph_Loaded;
+        }
+
+        #region NavigationHelper registration
+        /// <summary>
+        /// Called when a page is no longer the active page in a frame.
+        /// </summary>
+        /// <param name="e">Provides data for non-cancelable navigation events</param>
+        protected async override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            if (_pollTimer != null)
+            {
+                _pollTimer.Stop();
+                _pollTimer = null;
+            }
+            await App.Engine.DeactivateAsync();
+        }
+
+        /// <summary>
+        /// Called when navigating to this page
+        /// </summary>
+        /// <param name="e">Event arguments</param>
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await App.Engine.ValidateSettingsAsync();
+            await App.Engine.ActivateAsync();
+
+            UpdateMenuAndAppBarIcons();
+
+            await _sync.WaitAsync();
+            try
+            {
+                await _model.UpdateAsync();
+            }
+            finally
+            {
+                _sync.Release();
+            }
+
+            // Start poll timer to update steps counts periodically
+            if (_pollTimer == null)
+            {
+                _pollTimer = new DispatcherTimer();
+                _pollTimer.Interval = TimeSpan.FromSeconds(5);
+                _pollTimer.Tick += PollTimerTick;
+                _pollTimer.Start();
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Step counter poll timer callback
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Event arguments</param>
+        private async void PollTimerTick(object sender, object e)
+        {
+            await _sync.WaitAsync();
+            try
+            {
+                // No need to update if we are not looking at today
+                if (_model.DayOffset == 0)
+                {
+                    await _model.UpdateAsync();
+                }
+            }
+            finally
+            {
+                _sync.Release();
+            }
         }
 
         /// <summary>
@@ -126,27 +205,110 @@ namespace Steps
             this.Frame.Navigate(typeof(AboutPage));
         }
 
+        ///// <summary>
+        ///// Removes background task
+        ///// </summary>
+        ///// <param name="taskName">Name of task to be removed</param>
+        ///// <returns>Asynchronous task</returns>
+        //private async static Task RemoveBackgroundTaskAsync(String taskName)
+        //{
+        //    BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
+        //    if (result != BackgroundAccessStatus.Denied)
+        //    {
+        //        // Remove previous registration
+        //        foreach (var task in BackgroundTaskRegistration.AllTasks)
+        //        {
+        //            if (task.Value.Name == taskName)
+        //            {
+        //                task.Value.Unregister(true);
+        //            }
+        //        }
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Registers background task
+        ///// </summary>
+        ///// <param name="trigger">Task trigger</param>
+        ///// <param name="taskName">Task name</param>
+        ///// <param name="taskEntryPoint">Task entry point</param>
+        ///// <returns>Asynchronous task</returns>
+        //private async static Task RegisterBackgroundTaskAsync(IBackgroundTrigger trigger, String taskName, String taskEntryPoint)
+        //{
+        //    BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
+        //    if (result != BackgroundAccessStatus.Denied)
+        //    {
+        //        await RemoveBackgroundTaskAsync(taskName);
+
+        //        // Register task
+        //        BackgroundTaskBuilder myTaskBuilder = new BackgroundTaskBuilder();
+        //        myTaskBuilder.SetTrigger(trigger);
+        //        myTaskBuilder.TaskEntryPoint = taskEntryPoint;
+        //        myTaskBuilder.Name = taskName;
+        //        BackgroundTaskRegistration myTask = myTaskBuilder.Register();
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Creates or removes a secondary tile
+        ///// </summary>
+        ///// <param name="removeTile"><c>true</c> to remove tile, <c>false</c> to create tile</param>
+        ///// <returns>Asynchronous task</returns>
+        //private async Task CreateOrRemoveTileAsync(bool removeTile)
+        //{
+        //    if (!removeTile)
+        //    {
+        //        var steps = await App.Engine.GetTotalStepCountAsync(DateTime.Now.Date);
+        //        uint stepCount = steps.WalkingStepCount + steps.RunningStepCount;
+        //        uint meter = (NUM_SMALL_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
+        //        uint meterSmall = (NUM_LARGE_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
+        //        try
+        //        {
+        //            var secondaryTile = new SecondaryTile(TILE_ID, "Steps", "/MainPage.xaml", new Uri("ms-appx:///Assets/Tiles/square" + meterSmall + ".png", UriKind.Absolute), TileSize.Square150x150);
+        //            secondaryTile.VisualElements.Square71x71Logo = new Uri("ms-appx:///Assets/Tiles/small_square" + meterSmall + ".png", UriKind.Absolute);
+        //            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+        //            secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = false;
+        //            secondaryTile.VisualElements.ShowNameOnWide310x150Logo = false;
+        //            secondaryTile.VisualElements.BackgroundColor = Color.FromArgb(255, 0, 138, 0);
+        //            secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/Tiles/wide" + meter + ".png", UriKind.Absolute);
+        //            secondaryTile.RoamingEnabled = false;
+        //            await secondaryTile.RequestCreateAsync();
+        //        }
+        //        catch (Exception)
+        //        {
+        //        }
+        //    }
+        //    else
+        //    {
+        //        SecondaryTile secondaryTile = new SecondaryTile(TILE_ID);
+        //        await secondaryTile.RequestDeleteAsync();
+        //        UpdateMenuAndAppBarIcons();
+        //    }
+        //}
+
         /// <summary>
         /// Updates menu and app bar icons
         /// </summary>
         private void UpdateMenuAndAppBarIcons()
         {
             // Show unpin or pin button
-            //ApplicationBarIconButton btn = (ApplicationBarIconButton)ApplicationBar.Buttons[2];
-            //if (!SecondaryTile.Exists(TILE_ID))
-            //{
-            //    btn.IconUri = new Uri("Assets/Images/pin-48px.png", UriKind.Relative);
-            //    btn.Text = "Pin";
-            //}
-            //else
-            //{
-            //    btn.IconUri = new Uri("Assets/Images/unpin-48px.png", UriKind.Relative);
-            //    btn.Text = "Unpin";
-            //}
-            //ApplicationBarIconButton back = (ApplicationBarIconButton)ApplicationBar.Buttons[0];
-            //back.IsEnabled = _model.DayOffset != 6;
-            //ApplicationBarIconButton next = (ApplicationBarIconButton)ApplicationBar.Buttons[1];
-            //next.IsEnabled = _model.DayOffset != 0;
+            if (!SecondaryTile.Exists(TILE_ID))
+            {
+                var icon = new BitmapIcon();
+                icon.UriSource = new Uri("Assets/Images/pin-48px.png", UriKind.Relative);
+                pinButton.Icon = icon;
+                pinButton.Label = _resourceLoader.GetString("PinButton/Label");
+            }
+            else
+            {
+                var icon = new BitmapIcon();
+                icon.UriSource = new Uri("Assets/Images/unpin-48px.png", UriKind.Relative);
+                pinButton.Icon = icon;
+                pinButton.Label = _resourceLoader.GetString("UnpinLabel");
+            }
+
+            backButton.IsEnabled = _model.DayOffset != 6;
+            nextButton.IsEnabled = _model.DayOffset != 0;
         }
 
         /// <summary>

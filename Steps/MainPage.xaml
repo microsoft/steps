@@ -123,7 +123,7 @@
   </Grid>
   <Page.BottomAppBar>
     <CommandBar x:Name="cmdBar" Opacity="0.5" Opening="CommandBar_Opened" Closing="CommandBar_Closed">
-      <AppBarButton x:Uid="BackButton" x:Name="prevButton" Label="_back" IsEnabled="True" Click="ApplicationBarIconButtonBack_Click" >
+      <AppBarButton x:Uid="BackButton" x:Name="backButton" Label="_back" IsEnabled="True" Click="ApplicationBarIconButtonBack_Click" >
         <AppBarButton.Icon>
           <BitmapIcon UriSource="/Assets/Images/back.png"/>
         </AppBarButton.Icon>
