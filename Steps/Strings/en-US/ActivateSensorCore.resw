@@ -117,39 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ResourceFlowDirection" xml:space="preserve">
-    <value>LeftToRight</value>
-    <comment>Controls the FlowDirection for all elements in the RootFrame. Set to the traditional direction of this resource file's language</comment>
+  <data name="LaterButton.Content" xml:space="preserve">
+    <value>Later</value>
   </data>
-  <data name="ResourceLanguage" xml:space="preserve">
-    <value>en-US</value>
-    <comment>Controls the Language and ensures that the font for all elements in the RootFrame aligns with the app's language. Set to the language code of this resource file's language.</comment>
+  <data name="LocationActivationButton.Content" xml:space="preserve">
+    <value>Switch on</value>
   </data>
-  <data name="ApplicationTitle" xml:space="preserve">
-    <value>MY APPLICATION</value>
+  <data name="LocationActivationExplanation.Text" xml:space="preserve">
+    <value>This application requires location data in order to work correctly</value>
   </data>
-  <data name="AppBarButtonText" xml:space="preserve">
-    <value>add</value>
+  <data name="LocationActivationTitle.Text" xml:space="preserve">
+    <value>Switch on location data</value>
   </data>
-  <data name="AppBarMenuItemText" xml:space="preserve">
-    <value>Menu Item</value>
+  <data name="MotionDataActivationButton.Content" xml:space="preserve">
+    <value>Switch on</value>
   </data>
-  <data name="AboutDescription" xml:space="preserve">
-    <value>The steps developer sample application demonstrates Lumia SensorCore SDK's Step Counter API functionality.</value>
+  <data name="MotionDataActivationExplanation.Text" xml:space="preserve">
+    <value>This application requires motion data in order to work correctly</value>
   </data>
-  <data name="AboutDisclaimer" xml:space="preserve">
-    <value>This developer example application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular phone users. The source code and more information of this sample can be found in GitHub:</value>
+  <data name="MotionDataActivationTitle.Text" xml:space="preserve">
+    <value>Switch on motion data</value>
   </data>
-  <data name="AboutHyperlinkProject" xml:space="preserve">
-    <value>Steps project in GitHub</value>
-  </data>
-  <data name="AppName" xml:space="preserve">
-    <value>LUMIA SENSORCORE SAMPLE</value>
-  </data>
-  <data name="Sen" xml:space="preserve">
-    <value />
-  </data>
-  <data name="VersionText" xml:space="preserve">
-    <value>Version:</value>
+  <data name="NeverButton.Content" xml:space="preserve">
+    <value>Do not ask again</value>
   </data>
 </root>

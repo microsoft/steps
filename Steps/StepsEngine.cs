@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Steps
 {
@@ -60,8 +59,8 @@ namespace Steps
         {
             if( !await StepCounter.IsSupportedAsync() )
             {
-                MessageBoxResult dlg = MessageBox.Show( "Unfortunately this device does not support step counting" );
-                Application.Current.Terminate();
+                //MessageBoxResult dlg = MessageBox.Show( "Unfortunately this device does not support step counting" );
+                //Application.Current.Terminate();
             }
             else
             {
@@ -72,27 +71,27 @@ namespace Steps
                 {
                     if( !settings.LocationEnabled )
                     {
-                        MessageBoxResult dlg = MessageBox.Show( "In order to count steps you need to enable location in system settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
-                        if( dlg == MessageBoxResult.OK )
-                        {
-                            await SenseHelper.LaunchLocationSettingsAsync();
-                        }
-                        else
-                        {
-                            Application.Current.Terminate();
-                        }
+                        //MessageBoxResult dlg = MessageBox.Show( "In order to count steps you need to enable location in system settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
+                        //if( dlg == MessageBoxResult.OK )
+                        //{
+                        //    await SenseHelper.LaunchLocationSettingsAsync();
+                        //}
+                        //else
+                        //{
+                        //    Application.Current.Terminate();
+                        //}
                     }
                     if( !settings.PlacesVisited )
                     {
-                        MessageBoxResult rc = MessageBox.Show( "In order to count steps you need to enable Motion data collection in Motion data settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
-                        if( rc == MessageBoxResult.OK )
-                        {
-                            await SenseHelper.LaunchSenseSettingsAsync();
-                        }
-                        else
-                        {
-                            Application.Current.Terminate();
-                        }
+                        //MessageBoxResult rc = MessageBox.Show( "In order to count steps you need to enable Motion data collection in Motion data settings. Do you want to open settings now? If not, application will exit.", "Information", MessageBoxButton.OKCancel );
+                        //if( rc == MessageBoxResult.OK )
+                        //{
+                        //    await SenseHelper.LaunchSenseSettingsAsync();
+                        //}
+                        //else
+                        //{
+                        //    Application.Current.Terminate();
+                        //}
                     }
                 }
             }
@@ -187,14 +186,14 @@ namespace Steps
         /// </summary>
         public async Task InitializeAsync()
         {
-            if( Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Emulator )
-            {
-                await InitializeSimulatorAsync();
-            }
-            else
-            {
-                await InitializeSensorAsync();
-            }
+            //if( Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Emulator )
+            //{
+            //    await InitializeSimulatorAsync();
+            //}
+            //else
+            //{
+            //    await InitializeSensorAsync();
+            //}
         }
 
         /// <summary>
@@ -248,25 +247,25 @@ namespace Steps
                 {
                     case SenseError.LocationDisabled:
                     {
-                        MessageBoxResult rc = MessageBox.Show( "Location has been disabled. Do you want to open Location settings now?", "Information", MessageBoxButton.OKCancel );
-                        if( rc == MessageBoxResult.OK )
-                        {
-                            await SenseHelper.LaunchLocationSettingsAsync();
-                        }
+                        //MessageBoxResult rc = MessageBox.Show( "Location has been disabled. Do you want to open Location settings now?", "Information", MessageBoxButton.OKCancel );
+                        //if( rc == MessageBoxResult.OK )
+                        //{
+                        //    await SenseHelper.LaunchLocationSettingsAsync();
+                        //}
                         return false;
                     }
                     case SenseError.SenseDisabled:
                     {
-                        MessageBoxResult rc = MessageBox.Show( "Motion data has been disabled. Do you want to open Motion data settings now?", "Information", MessageBoxButton.OKCancel );
-                        if( rc == MessageBoxResult.OK )
-                        {
-                            await SenseHelper.LaunchSenseSettingsAsync();
-                        }
+                        //MessageBoxResult rc = MessageBox.Show( "Motion data has been disabled. Do you want to open Motion data settings now?", "Information", MessageBoxButton.OKCancel );
+                        //if( rc == MessageBoxResult.OK )
+                        //{
+                        //    await SenseHelper.LaunchSenseSettingsAsync();
+                        //}
                         return false;
                     }
                     default:
                     {
-                        MessageBox.Show( "Error: " + SenseHelper.GetSenseError( failure.HResult ), "Information", MessageBoxButton.OK );
+                        //MessageBox.Show( "Error: " + SenseHelper.GetSenseError( failure.HResult ), "Information", MessageBoxButton.OK );
                         return false;
                     }
                 }
@@ -278,5 +277,3 @@ namespace Steps
         }
     }
 }
-
-// end of file
