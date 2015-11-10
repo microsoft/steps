@@ -40,7 +40,7 @@ namespace Steps
         /// Step counter engine
         /// </summary>
         /// <returns>Step counter engine</returns>
-        public static StepsEngine Engine { get; private set; }
+        public static IStepsEngine Engine { get; private set; }
         #endregion
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Steps
             this.InitializeComponent();
 
             // Instantiate step counter
-            Engine = new StepsEngine();
+            Engine = new LumiaStepsEngine();
 
             this.Suspending += OnSuspending;
         }

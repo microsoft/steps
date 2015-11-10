@@ -110,7 +110,6 @@ namespace Steps
         /// <param name="e">Event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            await App.Engine.ValidateSettingsAsync();
             await App.Engine.ActivateAsync();
 
             UpdateMenuAndAppBarIcons();

@@ -30,9 +30,42 @@ using Lumia.Sense;
 namespace Steps
 {
     /// <summary>
-    /// Steps engine for the application
+    /// Platform agnostic Steps Engine interface
+    /// This interface is implementd by OSStepsEngine and LumiaStepsEngine.
     /// </summary>
-    public class StepsEngine
+    public interface IStepsEngine
+    {
+        /// <summary>
+        /// Activates the step counter
+        /// </summary>
+        /// <returns>Asynchronous task</returns>
+        Task ActivateAsync();
+
+        /// <summary>
+        /// Deactivates the step counter
+        /// </summary>
+        /// <returns>Asynchronous task</returns>
+        Task DeactivateAsync();
+
+        /// <summary>
+        /// Returns steps for given day at given resolution
+        /// </summary>
+        /// <param name="day">Day to fetch data for</param>
+        /// <param name="resolution">Resolution in minutes. Minimum resolution is five minutes.</param>
+        /// <returns>List of steps counts for the given day at given resolution.</returns>
+        Task<List<KeyValuePair<TimeSpan, uint>>> GetStepsCountsForDay(DateTime day, uint resolution);
+
+        /// <summary>
+        /// Returns step count for given day
+        /// </summary>
+        /// <returns>Step count for given day</returns>
+        Task<StepCount> GetTotalStepCountAsync(DateTime day);
+    }
+
+    /// <summary>
+    /// Steps engine that wraps the Lumia SensorCore StepCounter APIs
+    /// </summary>
+    public class LumiaStepsEngine : IStepsEngine
     {
         #region Private members
         /// <summary>
@@ -52,9 +85,9 @@ namespace Steps
         #endregion
 
         /// <summary>
-        /// constructor  
+        /// constructor
         /// </summary>
-        public StepsEngine()
+        public LumiaStepsEngine()
         {
         }
 
@@ -62,7 +95,7 @@ namespace Steps
         /// Makes sure necessary settings are enabled in order to use SensorCore
         /// </summary>
         /// <returns>Asynchronous task</returns>
-        public async Task ValidateSettingsAsync()
+        private async Task ValidateSettingsAsync()
         {
             if (!await StepCounter.IsSupportedAsync())
             {
@@ -109,6 +142,9 @@ namespace Steps
         /// </summary>
         public async Task ActivateAsync()
         {
+            // Ensure that settings are enabled before proceeding
+            await ValidateSettingsAsync();
+
             if (_sensorActive) return;
             if (_stepCounter != null)
             {
@@ -182,7 +218,7 @@ namespace Steps
         /// <summary>
         /// Initializes simulator if example runs on emulator otherwise initializes StepCounter
         /// </summary>
-        public async Task InitializeAsync()
+        private async Task InitializeAsync()
         {
             // Using this method to detect if the application runs in the emulator or on a real device. Later the *Simulator API is used to read fake sense data on emulator. 
             // In production code you do not need this and in fact you should ensure that you do not include the Lumia.Sense.Testing reference in your project.
