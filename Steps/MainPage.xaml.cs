@@ -295,14 +295,14 @@ namespace Steps
             if (!SecondaryTile.Exists(TILE_ID))
             {
                 var icon = new BitmapIcon();
-                icon.UriSource = new Uri("Assets/Images/pin-48px.png", UriKind.Relative);
+                icon.UriSource = new Uri("ms-appx:///Assets/Images/pin-48px.png", UriKind.Absolute);
                 pinButton.Icon = icon;
                 pinButton.Label = _resourceLoader.GetString("PinButton/Label");
             }
             else
             {
                 var icon = new BitmapIcon();
-                icon.UriSource = new Uri("Assets/Images/unpin-48px.png", UriKind.Relative);
+                icon.UriSource = new Uri("ms-appx:///Assets/Images/unpin-48px.png", UriKind.Absolute);
                 pinButton.Icon = icon;
                 pinButton.Label = _resourceLoader.GetString("UnpinLabel");
             }
