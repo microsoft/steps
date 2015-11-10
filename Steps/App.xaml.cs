@@ -56,9 +56,6 @@ namespace Steps
         {
             this.InitializeComponent();
 
-            // Instantiate step counter
-            Engine = new LumiaStepsEngine();
-
             this.Suspending += OnSuspending;
         }
 
@@ -68,7 +65,7 @@ namespace Steps
         /// search results, and so forth.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -77,6 +74,9 @@ namespace Steps
             }
 #endif
             Frame rootFrame = Window.Current.Content as Frame;
+
+            // Instantiate the step engine
+            Engine = await StepsEngineFactory.GetDefaultAsync();
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active

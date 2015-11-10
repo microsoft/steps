@@ -268,8 +268,8 @@ namespace Steps
             try
             {
                 var stepCount = await App.Engine.GetTotalStepCountAsync(DateTime.Today - TimeSpan.FromDays(DayOffset));
-                TotalRunningSteps = stepCount.RunningStepCount;
-                TotalWalkingSteps = stepCount.WalkingStepCount;
+                TotalRunningSteps = stepCount.RunningCount;
+                TotalWalkingSteps = stepCount.WalkingCount;
 
                 _steps = await App.Engine.GetStepsCountsForDay(DateTime.Today - TimeSpan.FromDays(DayOffset), GRAPH_RESOLUTION);
                 NotifyPropertyChanged("");

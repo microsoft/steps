@@ -262,7 +262,7 @@ namespace Steps
             if (!removeTile)
             {
                 var steps = await App.Engine.GetTotalStepCountAsync(DateTime.Now.Date);
-                uint stepCount = steps.WalkingStepCount + steps.RunningStepCount;
+                uint stepCount = steps.TotalCount;
                 uint meter = (NUM_SMALL_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
                 uint meterSmall = (NUM_LARGE_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
                 try

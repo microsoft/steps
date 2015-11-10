@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.Devices.Sensors;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -29,6 +30,74 @@ using Lumia.Sense;
 
 namespace Steps
 {
+    // Extracts the step counts from pedometer readings or Lumia StepCounts
+    public class StepCountDeltas
+    {
+        public uint RunningCount { get; private set; }
+        public uint WalkingCount { get; private set; }
+        public uint UnknownCount { get; private set; }
+
+        public uint TotalCount
+        {
+            get
+            {
+                return RunningCount + WalkingCount + UnknownCount;
+            }
+        }
+
+        // Extracts counts from pedometer readings
+        public StepCountDeltas(IReadOnlyList<PedometerReading> readings)
+        {
+            // Get the most recent batch of 3 readings (one per StepKind)
+            for (int i = 0; i < readings.Count && i < 3; i++)
+            {
+                var reading = readings[readings.Count - i - 1];
+                switch (reading.StepKind)
+                {
+                    case PedometerStepKind.Running:
+                        RunningCount = (uint)reading.CumulativeSteps;
+                        break;
+                    case PedometerStepKind.Walking:
+                        WalkingCount = (uint)reading.CumulativeSteps;
+                        break;
+                    case PedometerStepKind.Unknown:
+                        UnknownCount = (uint)reading.CumulativeSteps;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Subtract the counts from the earliest batch of 3 readings (one per StepKind)
+            for (int i = 0; i < readings.Count && i < 3; i++)
+            {
+                var reading = readings[i];
+                switch (reading.StepKind)
+                {
+                    case PedometerStepKind.Running:
+                        RunningCount -= (uint)reading.CumulativeSteps;
+                        break;
+                    case PedometerStepKind.Walking:
+                        WalkingCount -= (uint)reading.CumulativeSteps;
+                        break;
+                    case PedometerStepKind.Unknown:
+                        UnknownCount -= (uint)reading.CumulativeSteps;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        // Extracts counts from a Lumia StepCount
+        public StepCountDeltas(StepCount stepCount)
+        {
+            RunningCount = stepCount.RunningStepCount;
+            WalkingCount = stepCount.WalkingStepCount;
+            UnknownCount = 0;
+        }
+    }
+
     /// <summary>
     /// Platform agnostic Steps Engine interface
     /// This interface is implementd by OSStepsEngine and LumiaStepsEngine.
@@ -59,7 +128,145 @@ namespace Steps
         /// Returns step count for given day
         /// </summary>
         /// <returns>Step count for given day</returns>
-        Task<StepCount> GetTotalStepCountAsync(DateTime day);
+        Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day);
+    }
+
+    /// <summary>
+    /// Factory class for instantiating Step Engines.
+    /// If a pedometer is surfaced through Windows.Devices.Sensors, the factory creates an instance of OSStepsEngine.
+    /// Otherwise, the factory creates an instance of LumiaStepsEngine.
+    /// </summary>
+    public static class StepsEngineFactory
+    {
+        /// <summary>
+        /// Static method to get the default steps engine present in the system.
+        /// </summary>
+        public static async Task<IStepsEngine> GetDefaultAsync()
+        {
+            IStepsEngine stepsEngine = null;
+
+            try
+            {
+                // Check if there is a pedometer in the system.
+                Pedometer pedometer = await Pedometer.GetDefaultAsync();
+
+                // If there is one then create OSStepsEngine.
+                if (pedometer != null)
+                {
+                    stepsEngine = new OSStepsEngine();
+                }
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                // If there is an activity sensor but the user has disabled motion data
+                // then check if the user wants to open settngs and enable motion data.
+                MessageDialog dialog = new MessageDialog("Motion access has been disabled in system settings. Do you want to open settings now?", "Information");
+                dialog.Commands.Add(new UICommand("Yes", async cmd => await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-motion"))));
+                dialog.Commands.Add(new UICommand("No"));
+                await dialog.ShowAsync();
+                new System.Threading.ManualResetEvent(false).WaitOne(500);
+                return null;
+            }
+
+            // If the OS activity sensor is not present then create the LumiaActivitySensor.
+            // This will use ActivityMonitor from SensorCore.
+            if (stepsEngine == null)
+            {
+                // Check if all the required settings have been configured correctly
+                await LumiaStepsEngine.ValidateSettingsAsync();
+
+                stepsEngine = new LumiaStepsEngine();
+            }
+            return stepsEngine;
+        }
+    }
+
+    /// <summary>
+    /// Steps engine that wraps the Windows.Devices.Sensors.Pedometer APIs
+    /// </summary>
+    public class OSStepsEngine : IStepsEngine
+    {
+        /// <summary>
+        /// Constructor that receives a pedometer instance
+        /// </summary>
+        public OSStepsEngine()
+        {
+        }
+
+        /// <summary>
+        /// Activates the step counter when app goes to foreground
+        /// </summary>
+        /// <returns>Asynchronous task</returns>
+        public Task ActivateAsync()
+        {
+            // This is where you can subscribe to Pedometer ReadingChanged events if needed.
+            // Do nothing here because we are not using events.
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Deactivates the step counter when app goes to background
+        /// </summary>
+        /// <returns>Asynchronous task</returns>
+        public Task DeactivateAsync()
+        {
+            // This is where you can unsubscribe from Pedometer ReadingChanged events if needed.
+            // Do nothing here because we are not using events.
+            return Task.FromResult(false);
+        }
+
+        /// <summary>
+        /// Returns steps for given day at given resolution
+        /// </summary>
+        /// <param name="day">Day to fetch data for</param>
+        /// <param name="resolution">Resolution in minutes. Minimum resolution is five minutes.</param>
+        /// <returns>List of steps counts for the given day at given resolution.</returns>
+        public async Task<List<KeyValuePair<TimeSpan, uint>>> GetStepsCountsForDay(DateTime day, uint resolution)
+        {
+            List<KeyValuePair<TimeSpan, uint>> steps = new List<KeyValuePair<TimeSpan, uint>>();
+            uint numIntervals = (((24 * 60) / resolution) + 1);
+            if (day.Date.Equals(DateTime.Today))
+            {
+                numIntervals = (uint)((DateTime.Now - DateTime.Today).TotalMinutes / resolution) + 1;
+            }
+
+            uint totalSteps = 0;
+            for (uint i = 0; i < numIntervals; i++)
+            {
+                TimeSpan ts = TimeSpan.FromMinutes(i * resolution);
+                DateTime startTime = day.Date + ts;
+                if (startTime < DateTime.Now)
+                {
+                    // Get history from startTime to the resolution duration
+                    var readings = await Pedometer.GetSystemHistoryAsync(startTime, TimeSpan.FromMinutes(resolution));
+
+                    // Compute the deltas
+                    var stepsDelta = new StepCountDeltas(readings);
+
+                    // Add to the total count
+                    totalSteps += stepsDelta.TotalCount;
+                    steps.Add(new KeyValuePair<TimeSpan, uint>(ts, totalSteps));
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return steps;
+        }
+
+        /// <summary>
+        /// Returns step count for given day
+        /// </summary>
+        /// <returns>Step count for given day</returns>
+        public async Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day)
+        {
+            // Get history from 1 day
+            var readings = await Pedometer.GetSystemHistoryAsync(day.Date, TimeSpan.FromDays(1));
+
+            // Extract the most recent step counts
+            return new StepCountDeltas(readings);
+        }
     }
 
     /// <summary>
@@ -85,7 +292,7 @@ namespace Steps
         #endregion
 
         /// <summary>
-        /// constructor
+        /// Constructor
         /// </summary>
         public LumiaStepsEngine()
         {
@@ -95,7 +302,7 @@ namespace Steps
         /// Makes sure necessary settings are enabled in order to use SensorCore
         /// </summary>
         /// <returns>Asynchronous task</returns>
-        private async Task ValidateSettingsAsync()
+        public static async Task ValidateSettingsAsync()
         {
             if (!await StepCounter.IsSupportedAsync())
             {
@@ -129,8 +336,9 @@ namespace Steps
         }
 
         /// <summary>
-        /// SensorCore needs to be deactivated when app goes to background  
+        /// SensorCore needs to be deactivated when app goes to background
         /// </summary>
+        /// <returns>Asynchronous task</returns>
         public async Task DeactivateAsync()
         {
             _sensorActive = false;
@@ -138,13 +346,10 @@ namespace Steps
         }
 
         /// <summary>
-        /// SensorCore needs to be activated when app comes back to foreground  
+        /// SensorCore needs to be activated when app comes back to foreground
         /// </summary>
         public async Task ActivateAsync()
         {
-            // Ensure that settings are enabled before proceeding
-            await ValidateSettingsAsync();
-
             if (_sensorActive) return;
             if (_stepCounter != null)
             {
@@ -203,11 +408,12 @@ namespace Steps
         /// Returns step count for given day
         /// </summary>
         /// <returns>Step count for given day</returns>
-        public async Task<StepCount> GetTotalStepCountAsync(DateTime day)
+        public async Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day)
         {
             if (_stepCounter != null && _sensorActive)
             {
-                return await _stepCounter.GetStepCountForRangeAsync(day.Date, TimeSpan.FromDays(1));
+                StepCount steps = await _stepCounter.GetStepCountForRangeAsync(day.Date, TimeSpan.FromDays(1));
+                return new StepCountDeltas(steps);
             }
             else
             {
@@ -234,7 +440,7 @@ namespace Steps
         }
 
         /// <summary>
-        /// Initializes StepCounter  
+        /// Initializes the step counter
         /// </summary>
         private async Task InitializeSensorAsync()
         {
@@ -288,23 +494,25 @@ namespace Steps
                             dlg = new MessageDialog("Location has been disabled. Do you want to open Location settings now?", "Information");
                             dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(async (cmd) => await SenseHelper.LaunchLocationSettingsAsync())));
                             dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { /* do nothing */ })));
-                            break;
+                            await dlg.ShowAsync();
+                            new System.Threading.ManualResetEvent(false).WaitOne(500);
+                            return false;
                         }
                     case SenseError.SenseDisabled:
                         {
                             dlg = new MessageDialog("Motion data has been disabled. Do you want to open Motion data settings now?", "Information");
                             dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(async (cmd) => await SenseHelper.LaunchSenseSettingsAsync())));
                             dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { /* do nothing */ })));
-                            break;
+                            await dlg.ShowAsync();
+                            return false;
                         }
                     default:
                         {
                             dlg = new MessageDialog("Failure: " + SenseHelper.GetSenseError(failure.HResult), "");
-                            break;
+                            await dlg.ShowAsync();
+                            return false;
                         }
                 }
-                await dlg.ShowAsync();
-                return false;
             }
             else
             {
