@@ -114,6 +114,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Square44x44Logo.scale-240.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -131,14 +132,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AlignmentGrid.png" />
-    <Content Include="Assets\BadgeLogo.scale-240.png" />
     <Content Include="Assets\Images\back.png" />
     <Content Include="Assets\Images\next.png" />
     <Content Include="Assets\Images\pin-48px.png" />
     <Content Include="Assets\Images\unpin-48px.png" />
-    <Content Include="Assets\Logo.png" />
-    <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\SquareTile150x150.scale-240.png" />
     <Content Include="Assets\SquareTile71x71.scale-240.png" />

@@ -34,7 +34,7 @@
     <Image Grid.RowSpan="2" Source="/Assets/steps_background_02.png" Opacity="0.25"/>
     <!--TitlePanel contains the name of the application and page title-->
     <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="30,17,0,28">
-      <TextBlock x:Uid="ApplicationSuite" Text="_SensorCore Example" Style="{ThemeResource BodyTextBlockStyle}" Typography.Capitals="SmallCaps" Foreground="White"/>
+      <TextBlock x:Uid="ApplicationSuite" Text="_SensorCore Example" Style="{ThemeResource CaptionTextBlockStyle}" Typography.Capitals="SmallCaps" Foreground="White"/>
       <TextBlock Text="steps" Style="{ThemeResource HeaderTextBlockStyle}" Foreground="White"/>
     </StackPanel>
     <!--ContentPanel - place additional content here-->
@@ -46,13 +46,13 @@
         <RowDefinition Height="13*"/>
         <RowDefinition Height="1*"/>
         <RowDefinition Height="35*"/>
-        <RowDefinition Height="15*"/>
+        <RowDefinition Height="10*"/>
       </Grid.RowDefinitions>
-      <Grid Grid.Row="0" Margin="0,0,0,-20">
+      <Grid Grid.Row="0" Margin="0,0,0,0">
         <TextBlock Text="{Binding DateString}" FontSize="25" TextAlignment="left"/>
       </Grid>
       <Grid Grid.Row="1" >
-        <Viewbox VerticalAlignment="Stretch" Height="Auto" Margin="0,-10,0,-10" HorizontalAlignment="Left">
+        <Viewbox VerticalAlignment="Stretch" Height="Auto" Margin="0,-20,0,-20" HorizontalAlignment="Left">
           <TextBlock  Name="TotalStepsText" Text="{Binding TotalSteps}" TextAlignment="left"/>
         </Viewbox>
       </Grid>
