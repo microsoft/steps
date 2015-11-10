@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Steps
@@ -271,13 +272,13 @@ namespace Steps
                 TotalWalkingSteps = stepCount.WalkingStepCount;
 
                 _steps = await App.Engine.GetStepsCountsForDay(DateTime.Today - TimeSpan.FromDays(DayOffset), GRAPH_RESOLUTION);
-                NotifyPropertyChanged(null);
+                NotifyPropertyChanged("");
             }
             catch (Exception)
             {
                 TotalRunningSteps = 0;
                 TotalWalkingSteps = 0;
-                NotifyPropertyChanged(null);
+                NotifyPropertyChanged("");
             }
         }
 
@@ -290,7 +291,7 @@ namespace Steps
         {
             _width = width;
             _height = height;
-            NotifyPropertyChanged(null);
+            NotifyPropertyChanged("");
         }
 
         /// <summary>
@@ -299,19 +300,18 @@ namespace Steps
         public void CycleZoomLevel()
         {
             _zoomIndex = (_zoomIndex + 1) % ZOOM_SCALES_STEPS.Count;
-            NotifyPropertyChanged(null);
+            NotifyPropertyChanged("");
         }
 
         /// <summary>
         /// Executes when a property has changed
         /// </summary>
         /// <param name="propertyName">Property which will be changed</param>
-        private void NotifyPropertyChanged(String propertyName)
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler && null != propertyName)
+            if (PropertyChanged != null)
             {
-                handler(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
