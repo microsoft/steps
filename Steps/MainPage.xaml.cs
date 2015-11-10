@@ -16,16 +16,20 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
 using System.Threading;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Resources;
+using Windows.UI;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
+using Lumia.Sense;
 
 namespace Steps
 {
@@ -205,86 +209,86 @@ namespace Steps
             this.Frame.Navigate(typeof(AboutPage));
         }
 
-        ///// <summary>
-        ///// Removes background task
-        ///// </summary>
-        ///// <param name="taskName">Name of task to be removed</param>
-        ///// <returns>Asynchronous task</returns>
-        //private async static Task RemoveBackgroundTaskAsync(String taskName)
-        //{
-        //    BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
-        //    if (result != BackgroundAccessStatus.Denied)
-        //    {
-        //        // Remove previous registration
-        //        foreach (var task in BackgroundTaskRegistration.AllTasks)
-        //        {
-        //            if (task.Value.Name == taskName)
-        //            {
-        //                task.Value.Unregister(true);
-        //            }
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Removes background task
+        /// </summary>
+        /// <param name="taskName">Name of task to be removed</param>
+        /// <returns>Asynchronous task</returns>
+        private async static Task RemoveBackgroundTaskAsync(string taskName)
+        {
+            BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
+            if (result != BackgroundAccessStatus.Denied)
+            {
+                // Remove previous registration
+                foreach (var task in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (task.Value.Name == taskName)
+                    {
+                        task.Value.Unregister(true);
+                    }
+                }
+            }
+        }
 
-        ///// <summary>
-        ///// Registers background task
-        ///// </summary>
-        ///// <param name="trigger">Task trigger</param>
-        ///// <param name="taskName">Task name</param>
-        ///// <param name="taskEntryPoint">Task entry point</param>
-        ///// <returns>Asynchronous task</returns>
-        //private async static Task RegisterBackgroundTaskAsync(IBackgroundTrigger trigger, String taskName, String taskEntryPoint)
-        //{
-        //    BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
-        //    if (result != BackgroundAccessStatus.Denied)
-        //    {
-        //        await RemoveBackgroundTaskAsync(taskName);
+        /// <summary>
+        /// Registers background task
+        /// </summary>
+        /// <param name="trigger">Task trigger</param>
+        /// <param name="taskName">Task name</param>
+        /// <param name="taskEntryPoint">Task entry point</param>
+        /// <returns>Asynchronous task</returns>
+        private async static Task RegisterBackgroundTaskAsync(IBackgroundTrigger trigger, String taskName, String taskEntryPoint)
+        {
+            BackgroundAccessStatus result = await BackgroundExecutionManager.RequestAccessAsync();
+            if (result != BackgroundAccessStatus.Denied)
+            {
+                await RemoveBackgroundTaskAsync(taskName);
 
-        //        // Register task
-        //        BackgroundTaskBuilder myTaskBuilder = new BackgroundTaskBuilder();
-        //        myTaskBuilder.SetTrigger(trigger);
-        //        myTaskBuilder.TaskEntryPoint = taskEntryPoint;
-        //        myTaskBuilder.Name = taskName;
-        //        BackgroundTaskRegistration myTask = myTaskBuilder.Register();
-        //    }
-        //}
+                // Register task
+                BackgroundTaskBuilder myTaskBuilder = new BackgroundTaskBuilder();
+                myTaskBuilder.SetTrigger(trigger);
+                myTaskBuilder.TaskEntryPoint = taskEntryPoint;
+                myTaskBuilder.Name = taskName;
+                BackgroundTaskRegistration myTask = myTaskBuilder.Register();
+            }
+        }
 
-        ///// <summary>
-        ///// Creates or removes a secondary tile
-        ///// </summary>
-        ///// <param name="removeTile"><c>true</c> to remove tile, <c>false</c> to create tile</param>
-        ///// <returns>Asynchronous task</returns>
-        //private async Task CreateOrRemoveTileAsync(bool removeTile)
-        //{
-        //    if (!removeTile)
-        //    {
-        //        var steps = await App.Engine.GetTotalStepCountAsync(DateTime.Now.Date);
-        //        uint stepCount = steps.WalkingStepCount + steps.RunningStepCount;
-        //        uint meter = (NUM_SMALL_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
-        //        uint meterSmall = (NUM_LARGE_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
-        //        try
-        //        {
-        //            var secondaryTile = new SecondaryTile(TILE_ID, "Steps", "/MainPage.xaml", new Uri("ms-appx:///Assets/Tiles/square" + meterSmall + ".png", UriKind.Absolute), TileSize.Square150x150);
-        //            secondaryTile.VisualElements.Square71x71Logo = new Uri("ms-appx:///Assets/Tiles/small_square" + meterSmall + ".png", UriKind.Absolute);
-        //            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
-        //            secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = false;
-        //            secondaryTile.VisualElements.ShowNameOnWide310x150Logo = false;
-        //            secondaryTile.VisualElements.BackgroundColor = Color.FromArgb(255, 0, 138, 0);
-        //            secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/Tiles/wide" + meter + ".png", UriKind.Absolute);
-        //            secondaryTile.RoamingEnabled = false;
-        //            await secondaryTile.RequestCreateAsync();
-        //        }
-        //        catch (Exception)
-        //        {
-        //        }
-        //    }
-        //    else
-        //    {
-        //        SecondaryTile secondaryTile = new SecondaryTile(TILE_ID);
-        //        await secondaryTile.RequestDeleteAsync();
-        //        UpdateMenuAndAppBarIcons();
-        //    }
-        //}
+        /// <summary>
+        /// Creates or removes a secondary tile
+        /// </summary>
+        /// <param name="removeTile"><c>true</c> to remove tile, <c>false</c> to create tile</param>
+        /// <returns>Asynchronous task</returns>
+        private async Task CreateOrRemoveTileAsync(bool removeTile)
+        {
+            if (!removeTile)
+            {
+                var steps = await App.Engine.GetTotalStepCountAsync(DateTime.Now.Date);
+                uint stepCount = steps.WalkingStepCount + steps.RunningStepCount;
+                uint meter = (NUM_SMALL_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
+                uint meterSmall = (NUM_LARGE_METER_IMAGES - 1) * Math.Min(stepCount, TARGET_STEPS) / TARGET_STEPS;
+                try
+                {
+                    var secondaryTile = new SecondaryTile(TILE_ID, "Steps", "/MainPage.xaml", new Uri("ms-appx:///Assets/Tiles/square" + meterSmall + ".png", UriKind.Absolute), TileSize.Square150x150);
+                    secondaryTile.VisualElements.Square71x71Logo = new Uri("ms-appx:///Assets/Tiles/small_square" + meterSmall + ".png", UriKind.Absolute);
+                    secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+                    secondaryTile.VisualElements.ShowNameOnSquare310x310Logo = false;
+                    secondaryTile.VisualElements.ShowNameOnWide310x150Logo = false;
+                    secondaryTile.VisualElements.BackgroundColor = Color.FromArgb(255, 0, 138, 0);
+                    secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/Tiles/wide" + meter + ".png", UriKind.Absolute);
+                    secondaryTile.RoamingEnabled = false;
+                    await secondaryTile.RequestCreateAsync();
+                }
+                catch (Exception)
+                {
+                }
+            }
+            else
+            {
+                SecondaryTile secondaryTile = new SecondaryTile(TILE_ID);
+                await secondaryTile.RequestDeleteAsync();
+                UpdateMenuAndAppBarIcons();
+            }
+        }
 
         /// <summary>
         /// Updates menu and app bar icons
@@ -318,28 +322,28 @@ namespace Steps
         /// <param name="e">Event arguments</param>
         private async void ApplicationBar_PinTile(object sender, RoutedEventArgs e)
         {
-            //bool removeTile = SecondaryTile.Exists(TILE_ID);
-            //if (removeTile)
-            //{
-            //    await RemoveBackgroundTaskAsync("StepTriggered");
-            //}
-            //else
-            //{
-            //    ApiSupportedCapabilities caps = await SenseHelper.GetSupportedCapabilitiesAsync();
-            //    // Use StepCounterUpdate to trigger live tile update if it is supported. Otherwise we use time trigger
-            //    if (caps.StepCounterTrigger)
-            //    {
-            //        var myTrigger = new DeviceManufacturerNotificationTrigger(SenseTrigger.StepCounterUpdate, false);
-            //        await RegisterBackgroundTaskAsync(myTrigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
-            //    }
-            //    else
-            //    {
-            //        BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
-            //        IBackgroundTrigger trigger = new TimeTrigger(15, false);
-            //        await RegisterBackgroundTaskAsync(trigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
-            //    }
-            //}
-            //await CreateOrRemoveTileAsync(removeTile);
+            bool removeTile = SecondaryTile.Exists(TILE_ID);
+            if (removeTile)
+            {
+                await RemoveBackgroundTaskAsync("StepTriggered");
+            }
+            else
+            {
+                ApiSupportedCapabilities caps = await SenseHelper.GetSupportedCapabilitiesAsync();
+                // Use StepCounterUpdate to trigger live tile update if it is supported. Otherwise we use time trigger
+                if (caps.StepCounterTrigger)
+                {
+                    var myTrigger = new DeviceManufacturerNotificationTrigger(SenseTrigger.StepCounterUpdate, false);
+                    await RegisterBackgroundTaskAsync(myTrigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
+                }
+                else
+                {
+                    BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
+                    IBackgroundTrigger trigger = new TimeTrigger(15, false);
+                    await RegisterBackgroundTaskAsync(trigger, "StepTriggered", "BackgroundTasks.StepTriggerTask");
+                }
+            }
+            await CreateOrRemoveTileAsync(removeTile);
         }
 
         /// <summary>

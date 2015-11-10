@@ -16,18 +16,16 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-using Lumia.Sense;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows;
 using Windows.ApplicationModel.Resources;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Lumia.Sense;
 
 namespace Steps
 {
@@ -182,16 +180,16 @@ namespace Steps
         }
 
         /// <summary>
-        /// Initializes simulator if example runs on emulator otherwise initializes StepCounter   
+        /// Initializes simulator if example runs on emulator otherwise initializes StepCounter
         /// </summary>
         public async Task InitializeAsync()
         {
             // Using this method to detect if the application runs in the emulator or on a real device. Later the *Simulator API is used to read fake sense data on emulator. 
-            // In production code you do not need this and in fact you should ensure that you do not include the Lumia.Sense.Test reference in your project.
+            // In production code you do not need this and in fact you should ensure that you do not include the Lumia.Sense.Testing reference in your project.
             EasClientDeviceInformation x = new EasClientDeviceInformation();
             if (x.SystemProductName.StartsWith("Virtual"))
             {
-                await InitializeSimulatorAsync();
+                //await InitializeSimulatorAsync();
             }
             else
             {
@@ -216,18 +214,17 @@ namespace Steps
         }
 
         /// <summary>
-        /// Initializes StepCounterSimulator.
+        /// Initializes StepCounterSimulator (requires Lumia.Sense.Testing)
         /// </summary>
-        public async Task InitializeSimulatorAsync()
-        {
-            // Uncomment to use simulator
-            //var obj = await SenseRecording.LoadFromFileAsync( "Simulations\\short recording.txt" );
-            //if( !await CallSensorCoreApiAsync( async () => { _stepCounter = await StepCounterSimulator.GetDefaultAsync( obj, DateTime.Now - TimeSpan.FromHours( 12 ) ); } ) )
-            //{
-            //    Application.Current.Exit();
-            //}
-            //_sensorActive = true;
-        }
+        //public async Task InitializeSimulatorAsync()
+        //{
+        //    var obj = await SenseRecording.LoadFromFileAsync("Simulations\\short recording.txt");
+        //    if (!await CallSensorCoreApiAsync(async () => { _stepCounter = await StepCounterSimulator.GetDefaultAsync(obj, DateTime.Now - TimeSpan.FromHours(12)); }))
+        //    {
+        //        Application.Current.Exit();
+        //    }
+        //    _sensorActive = true;
+        //}
 
         /// <summary>
         /// Performs asynchronous Sensorcore SDK operation and handles any exceptions
