@@ -108,6 +108,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters.cs" />
     <Compile Include="OEMTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

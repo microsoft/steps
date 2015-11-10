@@ -15,14 +15,17 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Data.Xml.Dom;
+using Windows.Devices.Sensors;
 using Windows.UI.Notifications;
 using Lumia.Sense;
+
+using BackgroundTasks.Converters;
 
 namespace BackgroundTasks
 {
@@ -57,7 +60,7 @@ namespace BackgroundTasks
         /// <summary>
         /// Number of steps
         /// </summary>
-        private StepCount _steps;
+        private StepCountData _steps;
 
         /// <summary>
         /// Sens error code
@@ -77,7 +80,7 @@ namespace BackgroundTasks
             {
                 if (await GetStepsAsync())
                 {
-                    UpdateTile(_steps.RunningStepCount + _steps.WalkingStepCount);
+                    UpdateTile(_steps.RunningCount + _steps.WalkingCount);
                 }
             }
             catch (Exception)
@@ -112,13 +115,27 @@ namespace BackgroundTasks
         /// <returns><c>true</c> if steps were successfully fetched, <c>false</c> otherwise</returns>
         private async Task<bool> GetStepsAsync()
         {
+            // First try the pedometer
+            try
+            {
+                var readings = await Pedometer.GetSystemHistoryAsync(DateTime.Now.Date, DateTime.Now - DateTime.Now.Date);
+                _steps = StepCountData.FromPedometerReadings(readings);
+                return true;
+            }
+            catch (Exception)
+            {
+                // Continue to the fallback
+            }
+
+            // Fall back to using Lumia Sensor Core.
             StepCounter stepCounter = null;
             try
             {
                 stepCounter = await StepCounter.GetDefaultAsync();
-                _steps = await stepCounter.GetStepCountForRangeAsync(
+                StepCount count = await stepCounter.GetStepCountForRangeAsync(
                     DateTime.Now.Date,
                     DateTime.Now - DateTime.Now.Date);
+                _steps = StepCountData.FromLumiaStepCount(count);
             }
             catch (Exception e)
             {
@@ -151,9 +168,9 @@ namespace BackgroundTasks
             // Square tile
             var SquareTile = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150PeekImageAndText01);
             var tileTextAttributes = SquareTile.GetElementsByTagName("text");
-            tileTextAttributes[0].AppendChild(SquareTile.CreateTextNode((_steps.WalkingStepCount + _steps.RunningStepCount).ToString() + " steps"));
-            tileTextAttributes[1].AppendChild(SquareTile.CreateTextNode(_steps.RunningStepCount.ToString() + " running steps"));
-            tileTextAttributes[2].AppendChild(SquareTile.CreateTextNode(_steps.WalkingStepCount.ToString() + " walking steps"));
+            tileTextAttributes[0].AppendChild(SquareTile.CreateTextNode((_steps.TotalCount).ToString() + " steps"));
+            tileTextAttributes[1].AppendChild(SquareTile.CreateTextNode(_steps.RunningCount.ToString() + " running steps"));
+            tileTextAttributes[2].AppendChild(SquareTile.CreateTextNode(_steps.WalkingCount.ToString() + " walking steps"));
             var bindingSquare = (XmlElement)SquareTile.GetElementsByTagName("binding").Item(0);
             bindingSquare.SetAttribute("branding", "none");
             XmlNodeList img = SquareTile.GetElementsByTagName("image");

@@ -28,76 +28,10 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Lumia.Sense;
 
+using BackgroundTasks.Converters;
+
 namespace Steps
 {
-    // Extracts the step counts from pedometer readings or Lumia StepCounts
-    public class StepCountDeltas
-    {
-        public uint RunningCount { get; private set; }
-        public uint WalkingCount { get; private set; }
-        public uint UnknownCount { get; private set; }
-
-        public uint TotalCount
-        {
-            get
-            {
-                return RunningCount + WalkingCount + UnknownCount;
-            }
-        }
-
-        // Extracts counts from pedometer readings
-        public StepCountDeltas(IReadOnlyList<PedometerReading> readings)
-        {
-            // Get the most recent batch of 3 readings (one per StepKind)
-            for (int i = 0; i < readings.Count && i < 3; i++)
-            {
-                var reading = readings[readings.Count - i - 1];
-                switch (reading.StepKind)
-                {
-                    case PedometerStepKind.Running:
-                        RunningCount = (uint)reading.CumulativeSteps;
-                        break;
-                    case PedometerStepKind.Walking:
-                        WalkingCount = (uint)reading.CumulativeSteps;
-                        break;
-                    case PedometerStepKind.Unknown:
-                        UnknownCount = (uint)reading.CumulativeSteps;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            // Subtract the counts from the earliest batch of 3 readings (one per StepKind)
-            for (int i = 0; i < readings.Count && i < 3; i++)
-            {
-                var reading = readings[i];
-                switch (reading.StepKind)
-                {
-                    case PedometerStepKind.Running:
-                        RunningCount -= (uint)reading.CumulativeSteps;
-                        break;
-                    case PedometerStepKind.Walking:
-                        WalkingCount -= (uint)reading.CumulativeSteps;
-                        break;
-                    case PedometerStepKind.Unknown:
-                        UnknownCount -= (uint)reading.CumulativeSteps;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        // Extracts counts from a Lumia StepCount
-        public StepCountDeltas(StepCount stepCount)
-        {
-            RunningCount = stepCount.RunningStepCount;
-            WalkingCount = stepCount.WalkingStepCount;
-            UnknownCount = 0;
-        }
-    }
-
     /// <summary>
     /// Platform agnostic Steps Engine interface
     /// This interface is implementd by OSStepsEngine and LumiaStepsEngine.
@@ -128,7 +62,7 @@ namespace Steps
         /// Returns step count for given day
         /// </summary>
         /// <returns>Step count for given day</returns>
-        Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day);
+        Task<StepCountData> GetTotalStepCountAsync(DateTime day);
     }
 
     /// <summary>
@@ -148,9 +82,11 @@ namespace Steps
             try
             {
                 // Check if there is a pedometer in the system.
+                // This also checks if the user has disabled motion dat from Privacy settings
                 Pedometer pedometer = await Pedometer.GetDefaultAsync();
 
                 // If there is one then create OSStepsEngine.
+                // It doesn't actually use the default pedometer, but we use the pedmeter 
                 if (pedometer != null)
                 {
                     stepsEngine = new OSStepsEngine();
@@ -158,7 +94,7 @@ namespace Steps
             }
             catch (System.UnauthorizedAccessException)
             {
-                // If there is an activity sensor but the user has disabled motion data
+                // If there is a pedometer but the user has disabled motion data
                 // then check if the user wants to open settngs and enable motion data.
                 MessageDialog dialog = new MessageDialog("Motion access has been disabled in system settings. Do you want to open settings now?", "Information");
                 dialog.Commands.Add(new UICommand("Yes", async cmd => await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-motion"))));
@@ -168,8 +104,7 @@ namespace Steps
                 return null;
             }
 
-            // If the OS activity sensor is not present then create the LumiaActivitySensor.
-            // This will use ActivityMonitor from SensorCore.
+            // No Windows.Devices.Sensors.Pedometer exists, fall back to using Lumia Sensor Core.
             if (stepsEngine == null)
             {
                 // Check if all the required settings have been configured correctly
@@ -229,7 +164,7 @@ namespace Steps
             {
                 numIntervals = (uint)((DateTime.Now - DateTime.Today).TotalMinutes / resolution) + 1;
             }
-
+ 
             uint totalSteps = 0;
             for (uint i = 0; i < numIntervals; i++)
             {
@@ -241,7 +176,7 @@ namespace Steps
                     var readings = await Pedometer.GetSystemHistoryAsync(startTime, TimeSpan.FromMinutes(resolution));
 
                     // Compute the deltas
-                    var stepsDelta = new StepCountDeltas(readings);
+                    var stepsDelta = StepCountData.FromPedometerReadings(readings);
 
                     // Add to the total count
                     totalSteps += stepsDelta.TotalCount;
@@ -259,13 +194,12 @@ namespace Steps
         /// Returns step count for given day
         /// </summary>
         /// <returns>Step count for given day</returns>
-        public async Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day)
+        public async Task<StepCountData> GetTotalStepCountAsync(DateTime day)
         {
             // Get history from 1 day
             var readings = await Pedometer.GetSystemHistoryAsync(day.Date, TimeSpan.FromDays(1));
 
-            // Extract the most recent step counts
-            return new StepCountDeltas(readings);
+            return StepCountData.FromPedometerReadings(readings);
         }
     }
 
@@ -408,12 +342,12 @@ namespace Steps
         /// Returns step count for given day
         /// </summary>
         /// <returns>Step count for given day</returns>
-        public async Task<StepCountDeltas> GetTotalStepCountAsync(DateTime day)
+        public async Task<StepCountData> GetTotalStepCountAsync(DateTime day)
         {
             if (_stepCounter != null && _sensorActive)
             {
                 StepCount steps = await _stepCounter.GetStepCountForRangeAsync(day.Date, TimeSpan.FromDays(1));
-                return new StepCountDeltas(steps);
+                return StepCountData.FromLumiaStepCount(steps);
             }
             else
             {
