@@ -1,8 +1,13 @@
 Steps
 =====
-Steps is a Lumia SensorCore SDK sample application demonstrating the usage of Step Counter API. In this 
+Steps is a sample application demonstrating the usage of Step Counter API. In this 
 sample application, history data is used to display a graph of user’s steps during 
 current day, and up to 7 days in the past.
+
+Starting with Windows 10, this sample supports the Windows.Devices.Sensors.Pedometer.
+It checks if the Pedometer is present before falling back to using the SensorCore
+Step Counter.
+
 
 1. Instructions
 --------------------------------------------------------------------------------
@@ -11,23 +16,22 @@ Learn about the Lumia SensorCore SDK from the Lumia Developer's Library. The
 example requires the Lumia SensorCore SDK's NuGet package but will retrieve it
 automatically (if missing) on first build.
 
-To build the application you need to have Windows 8.1 and Windows Phone SDK 8.1
-installed.
+To build the application you need to have Windows 10 and Windows 10 SDK installed.
 
-Using the Windows Phone 8.1 SDK:
+Using the Windows 10 SDK:
 
 1. Open the SLN file: File > Open Project, select the file `Steps.sln`
-2. Remove the "AnyCPU" configuration (not supported by the Lumia SensorCore SDK)
-or simply select ARM
+2. Select ARM
 3. Select the target 'Device'.
 4. Press F5 to build the project and run it on the device.
 
 Alternatively you can also build the example for the emulator (x86) in which case
-the Steps will use simulated data.
+the Steps will use simulated data. In order to use the emulator, you need to uncomment
+the code block in StepsEngine to use the emulator, and include Lumia.Sense.Testing.
 
-Please see the official documentation for
-deploying and testing applications on Windows Phone devices:
-http://msdn.microsoft.com/en-us/library/gg588378%28v=vs.92%29.aspx
+Please refer to the official SDK sample documentation for Universal Windows Platform
+development.
+https://github.com/microsoft/windows-universal-samples/
 
 2. Implementation
 --------------------------------------------------------------------------------
@@ -56,6 +60,7 @@ returns.
  
 3. Version history
 --------------------------------------------------------------------------------
+* Version 2.0.0.0: Updated to Universal Windows Platform
 * Version 1.1.0.3: Updated to use latest Lumia SensorCore SDK 1.1 Preview
 * Version 1.1.0.2:
  * Some bug fixes made in this release.  
@@ -71,6 +76,7 @@ returns.
 
 | Project | Release | Download |
 | ------- | --------| -------- |
+| Steps | v2.0.0.0 | [steps-2.0.zip](https://github.com/Microsoft/steps/archive/v2.0.zip) |
 | Steps | v1.1.0.3 | [steps-1.1.0.3.zip](https://github.com/Microsoft/steps/archive/v1.1.0.3.zip) |
 | Steps | v1.1.0.2 | [steps-1.1.0.2.zip](https://github.com/Microsoft/steps/archive/v1.1.0.2.zip) |
 | Steps | v1.1 | [steps-1.1.zip](https://github.com/Microsoft/steps/archive/v1.1.zip) |
