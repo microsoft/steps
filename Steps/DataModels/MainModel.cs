@@ -22,8 +22,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace Steps
 {
@@ -97,34 +97,34 @@ namespace Steps
         /// <summary>
         /// Day offset to today, i.e. 0 = today, 1 = yesterday etc.
         /// </summary>
-        public uint DayOffset 
-        { 
-            get 
-            { 
-                return _dayOffset; 
-            } 
-            set 
-            { 
-                _dayOffset = value; 
-                NotifyPropertyChanged( "DateString" );
-                NotifyPropertyChanged( "DayOffset" );
-            } 
+        public uint DayOffset
+        {
+            get
+            {
+                return _dayOffset;
+            }
+            set
+            {
+                _dayOffset = value;
+                NotifyPropertyChanged("DateString");
+                NotifyPropertyChanged("DayOffset");
+            }
         }
 
         /// <summary>
         /// Gets maximum steps range for graph
         /// </summary>
-        public string ScaleMax { get { return ZOOM_SCALES_STEPS[ _zoomIndex ].ToString(); } }
+        public string ScaleMax { get { return ZOOM_SCALES_STEPS[_zoomIndex].ToString(); } }
 
         /// <summary>
         /// Gets half steps range for graph
         /// </summary>
-        public string ScaleHalf { get { return ( ZOOM_SCALES_STEPS[ _zoomIndex ] / 2 ).ToString(); } }
+        public string ScaleHalf { get { return (ZOOM_SCALES_STEPS[_zoomIndex] / 2).ToString(); } }
 
         /// <summary>
         /// Gets margin of the step graph
         /// </summary>
-        public string GraphMarginX { get { return ( GRAPH_MARGIN_X ).ToString(); } }
+        public string GraphMarginX { get { return (GRAPH_MARGIN_X).ToString(); } }
 
         /// <summary>
         /// Get the date for the graph
@@ -133,20 +133,20 @@ namespace Steps
         {
             get
             {
-                CultureInfo ci = new CultureInfo( "en-GB" );
+                CultureInfo ci = new CultureInfo("en-GB");
                 string format = "D";
-                if( DayOffset == 0 )
+                if (DayOffset == 0)
                 {
                     return "Today";
                 }
-                else if( DayOffset == 1 )
+                else if (DayOffset == 1)
                 {
                     return "Yesterday";
                 }
                 else
                 {
-                    DateTime time = DateTime.Now - TimeSpan.FromDays( DayOffset );
-                    return time.ToString( format, ci );
+                    DateTime time = DateTime.Now - TimeSpan.FromDays(DayOffset);
+                    return time.ToString(format, ci);
                 }
             }
         }
@@ -162,11 +162,11 @@ namespace Steps
             }
             set
             {
-                if( value != _walkingSteps )
+                if (value != _walkingSteps)
                 {
                     _walkingSteps = value;
-                    NotifyPropertyChanged( "TotalWalkingSteps" );
-                    NotifyPropertyChanged( "TotalSteps" );
+                    NotifyPropertyChanged("TotalWalkingSteps");
+                    NotifyPropertyChanged("TotalSteps");
                 }
             }
         }
@@ -182,11 +182,11 @@ namespace Steps
             }
             set
             {
-                if( value != _runningSteps )
+                if (value != _runningSteps)
                 {
                     _runningSteps = value;
-                    NotifyPropertyChanged( "TotalRunningSteps" );
-                    NotifyPropertyChanged( "TotalSteps" );
+                    NotifyPropertyChanged("TotalRunningSteps");
+                    NotifyPropertyChanged("TotalSteps");
                 }
             }
         }
@@ -213,18 +213,18 @@ namespace Steps
         {
             get
             {
-                if( _steps == null ) return "";
+                if (_steps == null) return "";
                 String path = "";
-                if( _steps.Count > 1 )
+                if (_steps.Count > 1)
                 {
-                    double xOffs = GRAPH_MARGIN_X + ( ( _width - 2 * GRAPH_MARGIN_X ) * _steps[0].Key.TotalMinutes ) / ( 24 * 60 );
-                    double yOffs = ( _height - ( Math.Min( ZOOM_SCALES_STEPS[ _zoomIndex ], _steps[0].Value ) * _height / ZOOM_SCALES_STEPS[ _zoomIndex ] ) );
+                    double xOffs = GRAPH_MARGIN_X + ((_width - 2 * GRAPH_MARGIN_X) * _steps[0].Key.TotalMinutes) / (24 * 60);
+                    double yOffs = (_height - (Math.Min(ZOOM_SCALES_STEPS[_zoomIndex], _steps[0].Value) * _height / ZOOM_SCALES_STEPS[_zoomIndex]));
                     path = "M " + (uint)xOffs + "," + (uint)yOffs;
-                    foreach( var item in _steps )
+                    foreach (var item in _steps)
                     {
-                        uint stepcount = Math.Min( ZOOM_SCALES_STEPS[ _zoomIndex ], item.Value );
-                        xOffs = GRAPH_MARGIN_X + ( ( _width - 2 * GRAPH_MARGIN_X ) * item.Key.TotalMinutes ) / ( 24 * 60 );
-                        yOffs = _height - ( stepcount * _height / ZOOM_SCALES_STEPS[ _zoomIndex ] );
+                        uint stepcount = Math.Min(ZOOM_SCALES_STEPS[_zoomIndex], item.Value);
+                        xOffs = GRAPH_MARGIN_X + ((_width - 2 * GRAPH_MARGIN_X) * item.Key.TotalMinutes) / (24 * 60);
+                        yOffs = _height - (stepcount * _height / ZOOM_SCALES_STEPS[_zoomIndex]);
                         path += " L " + (uint)xOffs + "," + (uint)yOffs;
                     }
                 }
@@ -238,7 +238,7 @@ namespace Steps
         /// <returns>Asynchronous task</returns>
         public async Task IncreaseDayOffsetAsync()
         {
-            if( DayOffset < 6 )
+            if (DayOffset < 6)
             {
                 DayOffset++;
                 await UpdateAsync();
@@ -251,7 +251,7 @@ namespace Steps
         /// <returns>Asynchronous task</returns>
         public async Task DecreaseDayOffsetAsync()
         {
-            if( DayOffset != 0 )
+            if (DayOffset != 0)
             {
                 DayOffset--;
                 await UpdateAsync();
@@ -267,18 +267,18 @@ namespace Steps
             _steps = null;
             try
             {
-                var stepCount = await App.Engine.GetTotalStepCountAsync( DateTime.Today - TimeSpan.FromDays( DayOffset ) );
-                TotalRunningSteps = stepCount.RunningStepCount;
-                TotalWalkingSteps = stepCount.WalkingStepCount;
+                var stepCount = await App.Engine.GetTotalStepCountAsync(DateTime.Today - TimeSpan.FromDays(DayOffset));
+                TotalRunningSteps = stepCount.RunningCount;
+                TotalWalkingSteps = stepCount.WalkingCount;
 
-                _steps = await App.Engine.GetStepsCountsForDay( DateTime.Today - TimeSpan.FromDays( DayOffset ), GRAPH_RESOLUTION );
-                NotifyPropertyChanged( null );
+                _steps = await App.Engine.GetStepsCountsForDay(DateTime.Today - TimeSpan.FromDays(DayOffset), GRAPH_RESOLUTION);
+                NotifyPropertyChanged("");
             }
-            catch( Exception )
+            catch (Exception)
             {
                 TotalRunningSteps = 0;
                 TotalWalkingSteps = 0;
-                NotifyPropertyChanged( null );
+                NotifyPropertyChanged("");
             }
         }
 
@@ -287,11 +287,11 @@ namespace Steps
         /// </summary>
         /// <param name="width">Width of graph canvas in pixels</param>
         /// <param name="height">Height of graph canvas in pixels</param>
-        public void SetDimensions( double width, double height )
+        public void SetDimensions(double width, double height)
         {
             _width = width;
             _height = height;
-            NotifyPropertyChanged( null );
+            NotifyPropertyChanged("");
         }
 
         /// <summary>
@@ -299,20 +299,19 @@ namespace Steps
         /// </summary>
         public void CycleZoomLevel()
         {
-            _zoomIndex = ( _zoomIndex + 1 ) % ZOOM_SCALES_STEPS.Count;
-            NotifyPropertyChanged( null );
+            _zoomIndex = (_zoomIndex + 1) % ZOOM_SCALES_STEPS.Count;
+            NotifyPropertyChanged("");
         }
 
         /// <summary>
         /// Executes when a property has changed
         /// </summary>
         /// <param name="propertyName">Property which will be changed</param>
-        private void NotifyPropertyChanged( String propertyName )
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if( null != handler )
+            if (PropertyChanged != null)
             {
-                handler( this, new PropertyChangedEventArgs( propertyName ) );
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

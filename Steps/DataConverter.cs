@@ -19,8 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
  */
 using System;
-using System.Globalization;
-using System.Windows.Data;
+using Windows.UI.Xaml.Data;
 
 namespace Steps
 {
@@ -35,9 +34,9 @@ namespace Steps
         /// <param name="value">The value produced by the binding source.</param>
         /// <param name="targetType">The type of the binding target property.</param>
         /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
+        /// <param name="language">The language of the conversion.</param>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        public object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+        public object Convert( object value, Type targetType, object parameter, string language )
         {
             return (double)value / 2;
         }
@@ -48,9 +47,9 @@ namespace Steps
         /// <param name="value">The value that is produced by the binding target.</param>
         /// <param name="targetType">The type to convert to.</param>
         /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
+        /// <param name="language">The language of the conversion.</param>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture )
+        public object ConvertBack( object value, Type targetType, object parameter, string language )
         {
             return "";
         }
@@ -67,9 +66,9 @@ namespace Steps
         /// <param name="value">The value produced by the binding source.</param>
         /// <param name="targetType">The type of the binding target property.</param>
         /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
+        /// <param name="language">The language of the conversion.</param>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        public object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+        public object Convert( object value, Type targetType, object parameter, string language )
         {
             return (double)value - 6;
         }
@@ -80,9 +79,9 @@ namespace Steps
         /// <param name="value">The value that is produced by the binding target.</param>
         /// <param name="targetType">The type to convert to.</param>
         /// <param name="parameter">The converter parameter to use.</param>
-        /// <param name="culture">The culture to use in the converter.</param>
+        /// <param name="language">The language of the conversion.</param>
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
-        public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture )
+        public object ConvertBack( object value, Type targetType, object parameter, string language )
         {
             return "";
         }
