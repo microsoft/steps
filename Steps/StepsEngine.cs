@@ -82,11 +82,10 @@ namespace Steps
             try
             {
                 // Check if there is a pedometer in the system.
-                // This also checks if the user has disabled motion dat from Privacy settings
+                // This also checks if the user has disabled motion data from Privacy settings
                 Pedometer pedometer = await Pedometer.GetDefaultAsync();
 
                 // If there is one then create OSStepsEngine.
-                // It doesn't actually use the default pedometer, but we use the pedmeter 
                 if (pedometer != null)
                 {
                     stepsEngine = new OSStepsEngine();
