@@ -17,6 +17,11 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>CED4691A35A63193226AFBB1A3D9921B3CFB0CDB</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Steps_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -90,6 +95,7 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
+    <None Include="Steps_TemporaryKey.pfx" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
     <PRIResource Include="Strings\en-US\ActivateSensorCore.resw" />
   </ItemGroup>
@@ -114,7 +120,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Square44x44Logo.scale-240.png" />
+    <Content Include="Assets\Square44x44Logo.png" />
+    <Content Include="Assets\steps_background_02.png" />
+    <Content Include="Assets\steps_background_02_620x300.png" />
+    <Content Include="Assets\steps_launcher150x150.png" />
+    <Content Include="Assets\steps_launcher310x150.png" />
+    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -137,11 +148,7 @@
     <Content Include="Assets\Images\pin-48px.png" />
     <Content Include="Assets\Images\unpin-48px.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
-    <Content Include="Assets\SquareTile150x150.scale-240.png" />
-    <Content Include="Assets\SquareTile71x71.scale-240.png" />
-    <Content Include="Assets\steps_background_02.png" />
     <Content Include="Assets\steps_launcher.png" />
-    <Content Include="Assets\StoreLogo.scale-240.png" />
     <Content Include="Assets\Images\pushpin.png" />
     <Content Include="Assets\Tiles\150x150.png" />
     <Content Include="Assets\Tiles\30x30.png" />
