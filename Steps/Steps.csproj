@@ -20,8 +20,6 @@
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>CED4691A35A63193226AFBB1A3D9921B3CFB0CDB</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>Steps_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -95,7 +93,6 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
-    <None Include="Steps_TemporaryKey.pfx" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
     <PRIResource Include="Strings\en-US\ActivateSensorCore.resw" />
   </ItemGroup>
