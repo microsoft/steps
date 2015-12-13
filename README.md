@@ -60,6 +60,8 @@ returns.
  
 3. Version history
 --------------------------------------------------------------------------------
+* Version 2.0.0.2: Minor revision to error handling
+* Version 2.0.0.1: Minor revision to assets
 * Version 2.0.0.0: Updated to Universal Windows Platform
 * Version 1.1.0.3: Updated to use latest Lumia SensorCore SDK 1.1 Preview
 * Version 1.1.0.2:
@@ -76,7 +78,7 @@ returns.
 
 | Project | Release | Download |
 | ------- | --------| -------- |
-| Steps | v2.0.0.1 | [steps-2.0.0.1.zip](https://github.com/Microsoft/steps/archive/v2.0.0.1.zip) |
+| Steps | v2.0.0.2 | [steps-2.0.0.2.zip](https://github.com/Microsoft/steps/archive/v2.0.0.2.zip) |
 | Steps | v1.1.0.3 | [steps-1.1.0.3.zip](https://github.com/Microsoft/steps/archive/v1.1.0.3.zip) |
 | Steps | v1.1.0.2 | [steps-1.1.0.2.zip](https://github.com/Microsoft/steps/archive/v1.1.0.2.zip) |
 | Steps | v1.1 | [steps-1.1.zip](https://github.com/Microsoft/steps/archive/v1.1.zip) |
