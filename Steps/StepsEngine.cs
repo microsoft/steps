@@ -237,13 +237,7 @@ namespace Steps
         /// <returns>Asynchronous task</returns>
         public static async Task ValidateSettingsAsync()
         {
-            if (!await StepCounter.IsSupportedAsync())
-            {
-                MessageDialog dlg = new MessageDialog(_resourceLoader.GetString("FeatureNotSupported/Message"), _resourceLoader.GetString("FeatureNotSupported/Title"));
-                await dlg.ShowAsync();
-                Application.Current.Exit();
-            }
-            else
+            if (await StepCounter.IsSupportedAsync())
             {
                 // Starting from version 2 of Motion data settings Step counter and Acitivity monitor are always available. In earlier versions system
                 // location setting and Motion data had to be enabled.
@@ -424,7 +418,7 @@ namespace Steps
                 {
                     case SenseError.LocationDisabled:
                         {
-                            dlg = new MessageDialog("Location has been disabled. Do you want to open Location settings now?", "Information");
+                            dlg = new MessageDialog(_resourceLoader.GetString("FeatureDisabled/Location"), _resourceLoader.GetString("FeatureDisabled/Title"));
                             dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(async (cmd) => await SenseHelper.LaunchLocationSettingsAsync())));
                             dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { /* do nothing */ })));
                             await dlg.ShowAsync();
@@ -433,9 +427,15 @@ namespace Steps
                         }
                     case SenseError.SenseDisabled:
                         {
-                            dlg = new MessageDialog("Motion data has been disabled. Do you want to open Motion data settings now?", "Information");
+                            dlg = new MessageDialog(_resourceLoader.GetString("FeatureDisabled/MotionData"), _resourceLoader.GetString("FeatureDisabled/Title"));
                             dlg.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(async (cmd) => await SenseHelper.LaunchSenseSettingsAsync())));
                             dlg.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { /* do nothing */ })));
+                            await dlg.ShowAsync();
+                            return false;
+                        }
+                    case SenseError.SenseNotAvailable:
+                        {
+                            dlg = new MessageDialog(_resourceLoader.GetString("FeatureNotSupported/Message"), _resourceLoader.GetString("FeatureNotSupported/Title"));
                             await dlg.ShowAsync();
                             return false;
                         }
