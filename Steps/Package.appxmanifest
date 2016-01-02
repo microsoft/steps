@@ -1,43 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  IgnorableNamespaces="uap mp">
-
-  <Identity
-    Name="NokiaDeveloper.StepsLumiaSensorCoreSDKsampleUWP"
-    Publisher="CN=4AD6DA08-6C39-4A10-98CC-3243374DA59C"
-    Version="2.0.0.0" />
-
-  <mp:PhoneIdentity PhoneProductId="f18c5104-723c-4dbc-8cd6-9f83b83cd162" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
-
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+  <Identity Name="SensorsQA.Steps-MicrosoftSensorCoreSDKsample" Publisher="CN=71D1DD2A-173B-4256-9750-F6222E68630C" Version="2.0.1.0" />
+  <mp:PhoneIdentity PhoneProductId="f18c5104-723c-4dbc-8cd6-9f83b83cd162" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Steps - Microsoft SensorCore SDK sample</DisplayName>
-    <PublisherDisplayName>Lumia SDK</PublisherDisplayName>
+    <PublisherDisplayName>Sensors QA</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
   </Dependencies>
-
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
-
   <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="Steps.App">
-      <uap:VisualElements
-        DisplayName="Steps – Microsoft SensorCore SDK sample"
-        Square150x150Logo="Assets\steps_launcher150x150.png"
-        Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="Steps"
-        BackgroundColor="#008A00">
-        <uap:DefaultTile Wide310x150Logo="Assets\steps_launcher310x150.png"/>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Steps.App">
+      <uap:VisualElements DisplayName="Steps – Microsoft SensorCore SDK sample" Square150x150Logo="Assets\steps_launcher150x150.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Steps" BackgroundColor="#008A00">
+        <uap:DefaultTile Wide310x150Logo="Assets\steps_launcher310x150.png">
+        </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\steps_background_02_620x300.png" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="portrait" />
@@ -53,11 +33,10 @@
       </Extensions>
     </Application>
   </Applications>
-
   <Capabilities>
     <Capability Name="internetClientServer" />
-    <DeviceCapability Name="activity" />
     <DeviceCapability Name="location" />
+    <DeviceCapability Name="activity" />
     <DeviceCapability Name="humaninterfacedevice">
       <Device Id="vidpid:0421 0716">
         <Function Type="usage:ffaa 0001" />
