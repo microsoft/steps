@@ -121,7 +121,7 @@
     <value>about</value>
   </data>
   <data name="AboutDescription.Text" xml:space="preserve">
-    <value>The Steps developer sample application demonstrates Lumia SensorCore SDK's Step Counter API functionality.</value>
+    <value>The Steps developer sample application demonstrates Microsoft Lumia SensorCore SDK's Step Counter API functionality.</value>
   </data>
   <data name="AboutDisclaimer.Text" xml:space="preserve">
     <value>This developer sample application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular phone users. The source code and more information of this sample can be from GitHub:</value>
@@ -139,7 +139,7 @@
     <value>about</value>
   </data>
   <data name="ApplicationSuite.Text" xml:space="preserve">
-    <value>LUMIA SENSORCORE SAMPLE</value>
+    <value>MICROSOFT SENSORCORE SAMPLE</value>
   </data>
   <data name="BackButton.Label" xml:space="preserve">
     <value>back</value>
@@ -165,7 +165,7 @@
 The application will now exit.</value>
   </data>
   <data name="FeatureNotSupported.Title" xml:space="preserve">
-    <value>Lumia SensorCore</value>
+    <value>Microsoft SensorCore</value>
   </data>
   <data name="NextButton.Label" xml:space="preserve">
     <value>next</value>
