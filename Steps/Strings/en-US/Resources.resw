@@ -121,7 +121,7 @@
     <value>about</value>
   </data>
   <data name="AboutDescription.Text" xml:space="preserve">
-    <value>The Steps developer sample application demonstrates Microsoft Lumia SensorCore SDK's Step Counter API functionality.</value>
+    <value>The Steps developer sample application demonstrates the Pedometer APIs and Microsoft Lumia SensorCore SDK's Step Counter API functionality.</value>
   </data>
   <data name="AboutDisclaimer.Text" xml:space="preserve">
     <value>This developer sample application has been created to provide tips and best practice guidance for software developers and app designers, and may not have all the features you would expect in a commercial product. This application is published in Store as a free software as it may also have value to regular phone users. The source code and more information of this sample can be from GitHub:</value>
@@ -160,9 +160,7 @@
     <value>Information</value>
   </data>
   <data name="FeatureNotSupported.Message" xml:space="preserve">
-    <value>Sorry, the feature exemplified by this application is not available on your phone.
-
-The application will now exit.</value>
+    <value>Sorry, the features exemplified by this application are not available on your device. This application requires a Windows 10 device that supports either a Pedometer or Lumia SensorCore Motion.</value>
   </data>
   <data name="FeatureNotSupported.Title" xml:space="preserve">
     <value>Microsoft SensorCore</value>
